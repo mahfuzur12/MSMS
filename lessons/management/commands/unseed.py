@@ -1,6 +1,13 @@
 from django.core.management.base import BaseCommand, CommandError
+from lessons.lesson_models.accounts import *
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        print("The unseed command has not been implemented yet!")
-        print("TO DO: Create an unseed command following the instructions of the assignment carefully.")
+        print("Unseeding")
+        User.objects.exclude(role="admin"
+                            ).exclude(role="superadmin"
+                            ).exclude(role="director").delete()
+                            
+        School.objects.all().delete()
+        print("Finished")
