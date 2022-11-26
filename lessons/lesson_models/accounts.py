@@ -18,6 +18,9 @@ class User(models.Model):
     password = models.CharField(max_length=256)
     email = models.CharField(max_length=40, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="student")
+    
+    def __str__(self):
+        return f"({self.URN}){self.email}"
 
 
 class UserMaker():
@@ -29,8 +32,11 @@ class UserMaker():
 
 
 class School(models.Model):
-    schoolID = models.AutoField(primary_key=True, default=1)
+    schoolID = models.AutoField(primary_key=True)
     name = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return f"({self.schoolID}) {self.name}"
     
 
 class Admin(models.Model):
@@ -39,6 +45,9 @@ class Admin(models.Model):
     
     def create(**kwargs):
         return UserMaker.create(Admin, **kwargs)
+    
+    def __str__(self):
+        return self.user.__str__()
     
     
 class Teacher(models.Model):
@@ -49,6 +58,9 @@ class Teacher(models.Model):
     def create(**kwargs):
         return UserMaker.create(Teacher, role="teacher", **kwargs)
     
+    def __str__(self):
+        return self.user.__str__()
+    
     
 class Student(models.Model):
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
@@ -58,4 +70,8 @@ class Student(models.Model):
     def create(**kwargs):
         return UserMaker.create(Student, role="student", **kwargs)
     
+    def __str__(self):
+        return self.user.__str__()
     
+
+   
