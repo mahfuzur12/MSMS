@@ -3,14 +3,6 @@ from lessons.models import *
 
 
 # Registered models.
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['URN',
-                   'first_name',
-                   'last_name',
-                   'email',
-                   'role',
-                   'password']
     
     
 @admin.register(Student)

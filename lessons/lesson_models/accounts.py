@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
 
+from accounts.models import User
+
 
 ROLE_CHOICES = [("student", "student"),
                 ("teacher", "teacher"),
@@ -8,19 +10,6 @@ ROLE_CHOICES = [("student", "student"),
                 ("superadmin","superadmin"),
                 ("director","director"),
                 ("siteadmin","siteadmin")]
-
-
-# Create your models here.
-class User(models.Model):
-    URN = models.AutoField(primary_key=True)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    password = models.CharField(max_length=256)
-    email = models.CharField(max_length=40, unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="student")
-    
-    def __str__(self):
-        return f"({self.URN}){self.email}"
 
 
 class UserMaker():
