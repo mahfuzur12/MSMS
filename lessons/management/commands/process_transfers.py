@@ -19,7 +19,7 @@ class Command(BaseCommand):
             
             balance_added = transfer.amount
             student.balance += balance_added
-            transfer.state = "C"
+            transfer.state = "P"
             transfer.save()
             student.save()
         print("Finished")
