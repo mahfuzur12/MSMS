@@ -1,0 +1,11 @@
+<html>
+    <head>
+        <title>MSMS</title>
+    </head>
+    <body>
+        <h1>Student Sign Up</h1>
+        <form action="{% url 'student_sign_up' %}" method="POST" novalidate>
+            {% csrf_token %}
+            {{form}}
+
+</html>

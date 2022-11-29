@@ -9,7 +9,7 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     password = models.CharField(max_length=256)
-    email = models.CharField(max_length=40, unique=True)
+    email = models.EmailField(unique=True, blank=False)
 
 class School(models.Model):
     schoolID = models.AutoField(primary_key=True)
@@ -20,11 +20,11 @@ class Student(models.Model):
     availability = models.CharField(max_length=10, default="NA")
     balance = models.DecimalField(max_digits=20, default=0, decimal_places=2)
     
+    
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     availability = models.CharField(max_length=10, default="NA")
-    school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
+  

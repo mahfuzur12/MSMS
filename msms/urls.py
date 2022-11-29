@@ -20,4 +20,5 @@ from msms import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('student_sign_up/', views.student_sign_up.as_view(), name='student_sign_up')
 ]
