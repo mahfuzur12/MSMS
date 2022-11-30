@@ -8,53 +8,50 @@ from .models import Student, Teacher, Admin, User
 class StudentSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
-    new_password = forms.CharField(label='Password', widget=forms.PasswordInput())
-    password_confirmation = forms.CharField(label='Password confirmation', widget=forms.PasswordInput())
     email = forms.EmailField(max_length=40)
+    availability = forms.CharField(max_length=10, required=True)
+    
+    def clean_email(self):
+        if User.objects.filter(email=self.cleaned_data['email']).exists():
+            raise forms.ValidationError("A user with that email already exists.")
+        return self.cleaned_data['email']
     
     class Meta(UserCreationForm.Meta):
         model = User
     
     @transaction.atomic
-    def data_save(self):
-        user_password = self.cleaned_data.get('new_password')
-        user_password_confirmation = self.cleaned_data.get('password_confirmation')
-        if user_password != user_password_confirmation:
-            self.add_error('password_confirmation', 'Confirmation does not match password.')
-            
+    def save(self):
         user = super().save(commit=False)
+        user.is_student = True
         user.first_name = self.cleaned_data.get('first_name')
         user.last_name = self.cleaned_data.get('last_name')
         user.email = self.cleaned_data.get('email')
-        user.password = self.cleaned_data.get('new_password')
         user.save()
         student = Student.objects.create(user=user)
         student.availability = self.cleaned_data.get('availability')
-        student.balance = self.cleaned_data.get('balance')
         return student
     
 class TeacherSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
-    new_password = forms.CharField(label='Password', widget=forms.PasswordInput())
-    password_confirmation = forms.CharField(label='Password confirmation', widget=forms.PasswordInput())
     email = forms.EmailField(max_length=40)
+    availability = forms.CharField(max_length=10, required=True)
+    
+    def clean_email(self):
+        if User.objects.filter(email=self.cleaned_data['email']).exists():
+            raise forms.ValidationError("A user with that email already exists.")
+        return self.cleaned_data['email']
     
     class Meta(UserCreationForm.Meta):
         model = User
     
     @transaction.atomic
-    def data_save(self):
-        user_password = self.cleaned_data.get('new_password')
-        user_password_confirmation = self.cleaned_data.get('password_confirmation')
-        if user_password != user_password_confirmation:
-            self.add_error('password_confirmation', 'Confirmation does not match password.')
-            
+    def save(self):
         user = super().save(commit=False)
+        user.is_teacher = True
         user.first_name = self.cleaned_data.get('first_name')
         user.last_name = self.cleaned_data.get('last_name')
         user.email = self.cleaned_data.get('email')
-        user.password = self.cleaned_data.get('new_password')
         user.save()
         teacher = Teacher.objects.create(user=user)
         teacher.availability = self.cleaned_data.get('availability')
@@ -63,25 +60,23 @@ class TeacherSignUpForm(UserCreationForm):
 class AdminSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
-    new_password = forms.CharField(label='Password', widget=forms.PasswordInput())
-    password_confirmation = forms.CharField(label='Password confirmation', widget=forms.PasswordInput())
     email = forms.EmailField(max_length=40)
+    
+    def clean_email(self):
+        if User.objects.filter(email=self.cleaned_data['email']).exists():
+            raise forms.ValidationError("A user with that email already exists.")
+        return self.cleaned_data['email']
     
     class Meta(UserCreationForm.Meta):
         model = User
     
     @transaction.atomic
-    def data_save(self):
-        user_password = self.cleaned_data.get('new_password')
-        user_password_confirmation = self.cleaned_data.get('password_confirmation')
-        if user_password != user_password_confirmation:
-            self.add_error('password_confirmation', 'Confirmation does not match password.')
-            
+    def save(self):
         user = super().save(commit=False)
+        user.is_admin = True
         user.first_name = self.cleaned_data.get('first_name')
         user.last_name = self.cleaned_data.get('last_name')
         user.email = self.cleaned_data.get('email')
-        user.password = self.cleaned_data.get('new_password')
         user.save()
         admin = Admin.objects.create(user=user)
         return admin

@@ -3,11 +3,10 @@
         <title>MSMS</title>
     </head>
     <body>
-        <h1>Student Sign Up</h1>
-        <form action="{% url 'student_sign_up' %}" method="POST" novalidate>
+        <h1>Teacher Sign Up</h1>
+        <form action="{% url 'teacher_sign_up' %}" method="POST" novalidate>
             {% csrf_token %}
             {{form}}
             <input type="submit" value="Sign up">
-        </form>    
-
+        </form> 
 </html>
