@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <title>MSMS</title>
+    </head>
+    <body>
+        <h1>Log In</h1>
+        {% for message in messages %}
+            <p><b>{{ message }}</b></p>
+        {% endfor %}
+        <form action="{% url 'login' %}" method="POST" novalidate>
+            {% csrf_token %}
+            {{form}}
+            <input type="submit" value="Login">
+        </form>    
+</html>
