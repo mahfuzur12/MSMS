@@ -59,7 +59,9 @@ def login_request(request):
             messages.add_message(request, messages.ERROR, "The credentials provided were invalid!")
     return render(request, 'login.html', context={'form':AuthenticationForm()})
 
+
 def feed(request):
+    '''A page for school admins'''
     return render(request, 'feed.html')
 
 def logout_view(request):

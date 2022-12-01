@@ -21,4 +21,3 @@ class Teacher(models.Model):
     
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-  
