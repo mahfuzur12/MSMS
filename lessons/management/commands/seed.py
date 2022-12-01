@@ -6,6 +6,7 @@ from faker import Faker
 from datetime import timedelta
 
 from lessons.models import *
+from msms.models import *
 
 
 def exists(model:type[Model], **kwargs):
@@ -49,7 +50,9 @@ class Command(BaseCommand):
            
             
     def persistently_save_user(self, model:type[Model], level=10, **kwargs,):
+        '''Will attempt to save a user with random details, accepts kwargs such as school'''
         if level <= 0:
+            print("Couldn't save user")
             # don't try this forever, very unlikely it will need more than 10 tries
             return None
         
@@ -85,7 +88,7 @@ class Command(BaseCommand):
             admin.school = school
             self.save_object(admin) 
         else:
-            admin = Admin.create(first_name="Petra", last_name="Pickles", password="Password123", email="petra.pickles@example.org", role="admin", school=school)
+            admin = Admin.create(first_name="Petra", last_name="Pickles", password="Password123", email="petra.pickles@example.org", school=school)
             self.save_object(admin)
         
         
@@ -96,7 +99,7 @@ class Command(BaseCommand):
             admin.school = school
             self.save_object(admin)
         else:
-            director = Admin.create(first_name="Marty", last_name="Major", password="Password123", email="marty.major@example.org", role="director", school=school)
+            director = Admin.create(first_name="Marty", last_name="Major", password="Password123", email="marty.major@example.org", school=school)
             self.save_object(director)
     
              

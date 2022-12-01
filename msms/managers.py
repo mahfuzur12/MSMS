@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
     
@@ -12,13 +13,12 @@ class UserManager(BaseUserManager):
             raise ValueError('Not possible to create super user')
 
         kwargs["is_staff"] = True
-        kwargs["role"] = "siteadmin"
         return self._create_user(email, password, **kwargs)
     
     
     def create_user(self, email, password=None, **kwargs):
-        if not kwargs.get("is_superuser"):
-            kwargs["is_superuser"] = True
+        if not kwargs.get("is_staff"):
+            kwargs["is_staff"] = False
             
         return self._create_user(email, password, **kwargs)
     
@@ -32,4 +32,3 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-    
