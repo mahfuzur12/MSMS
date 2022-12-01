@@ -11,10 +11,11 @@ from msms.models import *
 
 def exists(model:type[Model], **kwargs):
         result = model.objects.filter(**kwargs)
-        if result.__len__() == 0:
-            return None
-        return result.first()
-
+        if result.exists():
+            return result.first()
+        
+        return None
+    
 
 class Command(BaseCommand):
     '''A class responsible for seeding the database'''
@@ -31,7 +32,9 @@ class Command(BaseCommand):
         
     
     def random_user(self):
-        return {"first_name":self.faker.first_name(),
+        return {
+                "username":self.faker.user_name(),
+                "first_name":self.faker.first_name(),
                 "last_name":self.faker.last_name(),
                 "password":self.faker.word(),
                 "email":self.faker.email()
@@ -84,7 +87,7 @@ class Command(BaseCommand):
         user = exists(User, email="petra.pickles@example.org")
         if user:
             print("Updating school for default admin")
-            admin = Admin.objects.get(user=user)
+            admin = exists(Admin, user=user)
             admin.school = school
             self.save_object(admin) 
         else:
@@ -108,21 +111,27 @@ class Command(BaseCommand):
         if not school:
             school = School(name="Default School")
             self.save_object(school)
-              
+        
+        # make a teacher and student, make a lesson request with both of them. Save all to database
         teacher = self.persistently_save_user(Teacher, school=school)
         student = self.persistently_save_user(Student)
         lesson = Lesson(num_lessons=3, interval=1, student=student, teacher=teacher, duration=timedelta(minutes=30))
         self.save_object(lesson)
         
+        # make a another student, make a lesson request with student and previous teacher. Save all to database
+        # then turn the lesson request into a booking
         student = self.persistently_save_user(Student)
         lesson = Lesson(num_lessons=4, interval=1, student=student, teacher=teacher, duration=timedelta(minutes=30))
         self.save_object(lesson)
         lesson.make_booking()
         
+        # make a another teacher, make a lesson request with teacher and previous student. Save all to database
+        # then turn the lesson request into a booking, and get the invoice
         teacher = self.persistently_save_user(Teacher, school=school)
         lesson = Lesson(num_lessons=5, interval=1, student=student, teacher=teacher, duration=timedelta(minutes=30))
         self.save_object(lesson)
         invoice = lesson.make_booking()
         
+        # make a transfer based on the invoice
         transfer = Transfer(reference=invoice.ref(), amount=invoice.amount)
         self.save_object(transfer)

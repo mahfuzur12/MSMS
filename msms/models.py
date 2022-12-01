@@ -2,6 +2,8 @@ from django.contrib.auth.hashers import make_password
 from email.policy import default
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from faker import Faker
+from lessons.schoolmodel import School
 
 from msms.managers import UserManager
 
@@ -37,6 +39,7 @@ class Student(models.Model):
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     availability = models.CharField(max_length=10, default="NA")
+    school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     
     def create(**kwargs):
         return UserMaker.create(Teacher, is_teacher=True, **kwargs)
@@ -47,6 +50,7 @@ class Teacher(models.Model):
     
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     
     def create(**kwargs):
         return UserMaker.create(Admin, is_admin=True, **kwargs)
@@ -54,10 +58,16 @@ class Admin(models.Model):
     def __str__(self):
         return self.user.__str__()
     
-    
+
+faker = Faker()
 class UserMaker():
-    def create(cls, first_name, last_name, password, email, is_admin=False, is_student=False, is_teacher=False, **kwargs):
-        user = User(first_name=first_name, last_name=last_name, password=make_password(password), email=email, 
+    def create(cls, first_name, last_name, password, email, username=None, is_admin=False, is_student=False, is_teacher=False, **kwargs):
+        if not username:
+            username = faker.user_name()
+            while User.objects.filter(username=username).exists():
+                username = faker.user_name()
+                
+        user = User(username=username, first_name=first_name, last_name=last_name, password=make_password(password), email=email, 
                     is_student=is_student, is_admin=is_admin, is_teacher=is_teacher)
         user.full_clean()
         user.save()

@@ -1,15 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from msms.models import Student, Teacher
+from lessons.schoolmodel import School
 
-
-class School(models.Model):
-    name = models.CharField(max_length=20)
     
-    def __str__(self):
-        return f"({self.pk}) {self.name}"
-    
-
 class Transfer(models.Model):
     reference = models.CharField(max_length=30)
     state = models.CharField(max_length=20, choices=[("I","incoming"),("P","processed")], default="I")
