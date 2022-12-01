@@ -76,14 +76,15 @@ class Command(BaseCommand):
         else:
             print("Using existing school")
         
-        
+        #check if student account already exists
         if exists(User, email="john.doe@example.org"):
             print("default student already exists")
         else:
+            # new student created
             student = Student.create(first_name="John", last_name="Doe", password="Password123", email="john.doe@example.org")
             self.save_object(student)
         
-        
+        # check if admin account already exists
         user = exists(User, email="petra.pickles@example.org")
         if user:
             print("Updating school for default admin")
@@ -91,10 +92,12 @@ class Command(BaseCommand):
             admin.school = school
             self.save_object(admin) 
         else:
+            # new admin created
             admin = Admin.create(first_name="Petra", last_name="Pickles", password="Password123", email="petra.pickles@example.org", school=school)
             self.save_object(admin)
         
         
+        # check if admin account already exists
         user = exists(User, email="marty.major@example.org")
         if user:
             print("Updating school for default director")
@@ -102,6 +105,7 @@ class Command(BaseCommand):
             admin.school = school
             self.save_object(admin)
         else:
+            # new admin created
             director = Admin.create(first_name="Marty", last_name="Major", password="Password123", email="marty.major@example.org", school=school)
             self.save_object(director)
     
