@@ -27,5 +27,6 @@ urlpatterns = [
     path('register/admin_sign_up/', views.admin_sign_up.as_view(), name='admin_sign_up'),
     path('login/', views.login_request, name='login'),
     path('feed/', views.feed, name='feed'),
-    path('logout/', views.logout_view, name='logout')
+    path('logout/', views.logout_view, name='logout'),
+    path('profile/', views.profile, name='profile')
 ]
