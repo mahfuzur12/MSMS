@@ -16,7 +16,7 @@ COST_PER_LESSON = 20
 class Lesson(models.Model):
     num_lessons = models.IntegerField()
     interval = models.IntegerField(choices=[(1, 1),(2, 2)])
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, null=True, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     duration = models.DurationField()
     state = models.CharField(max_length=20, choices=[("R","request"),("B","booking"),("C","cancelled")], default="R")
