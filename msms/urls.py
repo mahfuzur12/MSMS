@@ -15,8 +15,9 @@ Including another URLconf
 """
 from unicodedata import name
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from msms import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,5 +28,6 @@ urlpatterns = [
     path('register/admin_sign_up/', views.admin_sign_up.as_view(), name='admin_sign_up'),
     path('login/', views.login_request, name='login'),
     path('feed/', views.feed, name='feed'),
-    path('logout/', views.logout_view, name='logout')
+    path('logout/', views.logout_view, name='logout'),
+    path('lesson/', include('lessons.urls'))
 ]
