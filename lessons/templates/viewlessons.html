@@ -1,0 +1,19 @@
+{% extends "base_page.html"%}
+
+{% block content%}
+<h1 class="pb-3">View
+    {% if user.is_superuser %}all
+    {% elif user.is_admin%}{{user.admin.school.name}}'s
+    {% else %}your
+    {% endif %} lessons</h1>
+{% if lesson_list %}
+    <ul>
+    {% for lesson in lesson_list %}
+        <li>{{ lesson }}</li>
+    {% endfor %}
+    </ul>
+
+{% else %}
+    <p>No lessons...</p>
+{% endif %}
+{% endblock %}
