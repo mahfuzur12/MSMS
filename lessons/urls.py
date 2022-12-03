@@ -1,0 +1,9 @@
+from django.urls import path
+from lessons import views
+
+
+urlpatterns = [
+    path('availability/', views.availability, name='availability'),
+    path('request/', views.RequestLesson.as_view(), name='request_lesson'),
+    path('view/', views.ViewLessons.as_view(), name='view_lessons'),
+]
