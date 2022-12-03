@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.hashers import make_password
 from email.policy import default
 from django.contrib.auth.models import AbstractUser
@@ -24,9 +25,12 @@ class User(AbstractUser):
         return f"({self.pk}){self.email}"
     
 
+DEF_AVAILABILITY = [True for _ in range(7)]
+
 class Student(models.Model):
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    availability = models.CharField(max_length=10, default="NA")
+    availability = models.CharField(max_length=70, default=json.dumps(DEF_AVAILABILITY))
     balance = models.DecimalField(max_digits=20, default=0, decimal_places=2)
     
     def create(**kwargs):
@@ -35,10 +39,13 @@ class Student(models.Model):
     def __str__(self):
         return self.user.__str__()
     
+    def get_availability(self):
+        return json.loads(self.availability)
+    
     
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    availability = models.CharField(max_length=10, default="NA")
+    availability = models.CharField(max_length=70, default=json.dumps(DEF_AVAILABILITY))
     school = models.ForeignKey(School, null=True, on_delete=models.SET_NULL)
     
     def create(**kwargs):
@@ -46,6 +53,9 @@ class Teacher(models.Model):
     
     def __str__(self):
         return self.user.__str__()
+    
+    def get_availability(self):
+        return json.loads(self.availability)
     
     
 class Admin(models.Model):
