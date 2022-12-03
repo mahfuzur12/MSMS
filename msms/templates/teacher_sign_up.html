@@ -1,3 +1,6 @@
+{% extends "base_page.html"%}
+
+{% block content%}
 <html>
     <head>
         <title>MSMS</title>
@@ -6,7 +9,8 @@
         <h1>Teacher Sign Up</h1>
         <form action="{% url 'teacher_sign_up' %}" method="POST" novalidate>
             {% csrf_token %}
-            {{form}}
+            {{form.as_p}}
             <input type="submit" value="Sign up">
         </form> 
 </html>
+{% endblock %}
