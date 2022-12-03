@@ -9,7 +9,6 @@ class StudentSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     email = forms.EmailField(max_length=40)
-    availability = forms.CharField(max_length=10, required=True)
     
     def clean_email(self):
         if User.objects.filter(email=self.cleaned_data['email']).exists():
@@ -28,14 +27,12 @@ class StudentSignUpForm(UserCreationForm):
         user.email = self.cleaned_data.get('email')
         user.save()
         student = Student.objects.create(user=user)
-        student.availability = self.cleaned_data.get('availability')
         return student
     
 class TeacherSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     email = forms.EmailField(max_length=40)
-    availability = forms.CharField(max_length=10, required=True)
     
     def clean_email(self):
         if User.objects.filter(email=self.cleaned_data['email']).exists():
@@ -54,7 +51,6 @@ class TeacherSignUpForm(UserCreationForm):
         user.email = self.cleaned_data.get('email')
         user.save()
         teacher = Teacher.objects.create(user=user)
-        teacher.availability = self.cleaned_data.get('availability')
         return teacher
     
 class AdminSignUpForm(UserCreationForm):
