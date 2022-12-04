@@ -3,7 +3,11 @@ from django.shortcuts import redirect, render
 from django.views.generic import CreateView
 from msms.form import StudentSignUpForm, TeacherSignUpForm, AdminSignUpForm
 from msms.models import User, Student, Teacher, Admin
+<<<<<<< HEAD
 from django.contrib.auth.forms import AuthenticationForm
+=======
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
+>>>>>>> parent of dd8a856 (Change password works)
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 
@@ -66,4 +70,25 @@ def feed(request):
 
 def logout_view(request):
     logout(request)
+<<<<<<< HEAD
     return redirect('home')
+=======
+    return redirect('home')
+
+def view_profile(request):
+    args = {'user': request.user}
+    return render(request, 'profile.html', args)
+
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            return redirect('/profile')
+    else:
+        form = EditProfileForm(instance=request.user)
+        args = {'form': form}
+        return render(request, 'edit_profile.html', args)
+
+>>>>>>> parent of dd8a856 (Change password works)

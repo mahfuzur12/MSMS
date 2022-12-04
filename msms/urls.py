@@ -29,5 +29,10 @@ urlpatterns = [
     path('login/', views.login_request, name='login'),
     path('feed/', views.feed, name='feed'),
     path('logout/', views.logout_view, name='logout'),
+<<<<<<< HEAD
     path('lesson/', include('lessons.urls'))
+=======
+    path('profile/', views.view_profile, name='view_profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile')
+>>>>>>> parent of dd8a856 (Change password works)
 ]
