@@ -29,5 +29,6 @@ urlpatterns = [
     path('feed/', views.feed, name='feed'),
     path('logout/', views.logout_view, name='logout'),
     path('lesson/', include('lessons.urls')),
-    path('profile/', views.view_profile, name='view_profile')
+    path('profile/', views.view_profile, name='view_profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile')
 ]

@@ -1,5 +1,5 @@
 from enum import unique
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from django.core.validators import RegexValidator
 from django.db import transaction
@@ -53,3 +53,13 @@ class TeacherSignUpForm(UserCreationForm):
         teacher = Teacher.objects.create(user=user)
         return teacher
     
+class EditProfileForm(UserChangeForm):
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'first_name',
+            'last_name',
+            'password'
+        )
