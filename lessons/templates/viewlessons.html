@@ -1,17 +1,39 @@
 {% extends "base_page.html"%}
 
 {% block content%}
+{% load static %}
+<link rel="stylesheet" href="{% static 'lessons/styles.css' %}">
+
 <h1 class="pb-3">View
     {% if user.is_superuser %}all
     {% elif user.is_admin%}{{user.admin.school.name}}'s
     {% else %}your
     {% endif %} lessons</h1>
 {% if lesson_list %}
-    <ul>
-    {% for lesson in lesson_list %}
-        <li>{{ lesson }}</li>
-    {% endfor %}
-    </ul>
+    <table class="table-striped border mx-auto mt-4 w-75 table">
+        <thead class="bg-secondary text-light">
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Teacher</th>
+                <th>No. lessons</th>
+                <th>Day</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for lesson in lesson_list %}
+            <tr {% if user.is_admin or user.is_superuser %} onclick="window.location.href='{% url 'edit_lesson' lesson.id %}'" {% endif %}>
+                <td>{{lesson.first_lesson_date}}</td>
+                <td>{{lesson.student}}</td>
+                <td>{{lesson.teacher}}</td>
+                <td>{{lesson.num_lessons}}</td>
+                <td>{{lesson.day}}</td>
+                <td>{{lesson.get_state_display}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
 {% else %}
     <p>No lessons...</p>
