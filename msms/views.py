@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from django.views.generic import CreateView
 from msms.form import StudentSignUpForm, TeacherSignUpForm
 from msms.models import User, Student, Teacher, Admin
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -59,6 +59,19 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
-def profile(request):
+def view_profile(request):
     args = {'user': request.user}
     return render(request, 'profile.html', args)
+
+def edit_profile(request):
+    if request.method == 'POST':
+        form = UserChangeForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            return redirect('/profile')
+    else:
+        form = UserChangeForm(instance=request.user)
+        args = {'form': form}
+        return render(request, 'edit_profile.html', args)
+
