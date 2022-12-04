@@ -49,22 +49,31 @@ def get_availability(user:User, model:type[Student|Teacher]):
     return dict(zip(DAYS, avail_list))
 
 
+@login_required(login_url='login')
+def options(request):
+    return render(request, "lessonoptions.html")
+
 
 class RequestLesson(LoginRequiredMixin, CreateView):
     model = Lesson
     form_class = LessonForm
     template_name = "requestlesson.html"
     
+    def get(self, request, *args, **kwargs):
+        # if user is admin show them an advanced form
+        if request.user.is_admin or request.user.is_superuser:
+            self.form_class = LessonAdminForm
+            
+        # user is teacher, redirect.
+        elif request.user.is_teacher:
+            messages.add_message(self.request, messages.INFO, "You were redirected")
+            return redirect("home")
+        
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
+        student = Student.objects.get(user=self.request.user)
         lesson:Lesson = form.save()
-        student = None
-        if self.request.user.is_student:
-            student = Student.objects.get(user=self.request.user)
-        else:
-            # user shoudln't be on this page, send home!
-            messages.add_message(self.request, messages.INFO, "Non students can't view lessons!?")
-            return redirect('home')
-
         lesson.student = student
         lesson.save()
         messages.add_message(self.request, messages.INFO, "Successfully created a lesson!")
@@ -76,29 +85,22 @@ class EditLesson(LoginRequiredMixin, UpdateView):
     form_class = LessonAdminForm
     template_name = "editlesson.html"
     
+    def get(self, request, *args, **kwargs):
+        if not (request.user.is_admin or request.user.is_superuser):
+            messages.add_message(self.request, messages.INFO, "You were redirected")
+            return redirect("home")
+        return super().get(request, *args, **kwargs)
+    
     def get_object(self, *args, **kwargs):
         lesson = get_object_or_404(Lesson, pk=self.kwargs['pk'])
         return lesson
 
     def get_success_url(self, *args, **kwargs):
-        return redirect("home")
+        return redirect("view_lessons")
     
-    '''
     def form_valid(self, form):
-        lesson:Lesson = form.save()
-        student = None
-        if self.request.user.is_student:
-            student = Student.objects.get(user=self.request.user)
-        else:
-            # user shoudln't be on this page, send home!
-            messages.add_message(self.request, messages.INFO, "Non students can't view lessons!?")
-            return redirect('home')
+        return super().form_valid(form)
 
-        lesson.student = student
-        lesson.save()
-        messages.add_message(self.request, messages.INFO, "Successfully created a lesson!")
-        return redirect('view_lessons')'''
-    
 
 class ViewLessons(LoginRequiredMixin, ListView):
     model = Lesson
