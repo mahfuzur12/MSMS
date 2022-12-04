@@ -14,7 +14,7 @@
                 <a href="{% url 'availability' %}">Availability</a>
                 <a href="{% url 'request_lesson' %}">Request Lesson</a>
                 <a href="{% url 'view_lessons' %}">View Lessons</a>
-                
+                <a href="{% url 'view_profile' %}">Profile</a>
                 {% if user.is_superuser %}
                 <a href="{% url 'admin:index' %}">Admin</a>
                 {% endif %}
