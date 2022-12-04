@@ -21,6 +21,7 @@ class Command(BaseCommand):
     '''A class responsible for seeding the database'''
     
     def __init__(self):
+        BaseCommand.__init__(self)
         self.faker = Faker("en_GB")
         
         

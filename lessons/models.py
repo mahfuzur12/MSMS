@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.db import models
 from django.utils import timezone
+
 from msms.models import Student, Teacher
 from lessons.schoolmodel import School
 
@@ -12,15 +15,25 @@ class Transfer(models.Model):
     
     
 COST_PER_LESSON = 20
+DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+def num_to_day():
+    return DAYS[timezone.now().weekday()]
 
 class Lesson(models.Model):
-    num_lessons = models.IntegerField()
-    interval = models.IntegerField(choices=[(1, 1),(2, 2)])
+    '''A model which represents a group of lessons.
+    They are assumed to be one a week'''
+    
+    # choices from 1-10
+    num_lessons = models.IntegerField(choices=[(num, num) for num in range(1, 11)], default=1)
+    interval = models.IntegerField(choices=[(1, 1),(2, 2)], default=1)
     student = models.ForeignKey(Student, null=True, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    duration = models.DurationField()
+    # choices from 30mins, 45mins, 1hr
+    duration = models.DurationField(choices=[(timedelta(minutes=mins), timedelta(minutes=mins)) for mins in [30, 45, 60]], default=30)
     state = models.CharField(max_length=20, choices=[("R","request"),("B","booking"),("C","cancelled")], default="R")
     first_lesson_date = models.DateField(default=timezone.now)
+    day = models.CharField(max_length=10, choices=[(day, day) for day in DAYS], default=num_to_day)
       
     def make_booking(self):
         if self.state == "B":
@@ -29,6 +42,7 @@ class Lesson(models.Model):
         self.state = "B"
         invoice = Invoice.create(
             amount=COST_PER_LESSON,
+            remaining_cost=COST_PER_LESSON * self.num_lessons,
             student=self.student,
             lesson=self)
         try:
@@ -42,11 +56,13 @@ class Lesson(models.Model):
     
     
     def __str__(self):
-        return f"Lesson({self.pk}) {self.student}-{self.teacher}"
+        return f"Lesson({self.pk}) {self.student} - {self.teacher}"
     
     
-class Invoice(models.Model):
+class Invoice(models.Model):   
+    # amount per lesson
     amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
+    remaining_cost = models.DecimalField(max_digits=20, default=0, decimal_places=2)
     number = models.IntegerField()
     date = models.DateField(default=timezone.now)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

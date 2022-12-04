@@ -24,6 +24,9 @@ class User(AbstractUser):
     def __str__(self):
         return f"({self.pk}){self.email}"
     
+    def str__2(self, prefix=""):
+        return f"{prefix}{self.first_name} {self.last_name}"
+    
 
 DEF_AVAILABILITY = [True for _ in range(7)]
 
@@ -37,7 +40,8 @@ class Student(models.Model):
         return UserMaker.create(Student, is_student=True, **kwargs)
     
     def __str__(self):
-        return self.user.__str__()
+        return self.user.str__2("Stud. ")
+    
     
     def get_availability(self):
         return json.loads(self.availability)
@@ -52,7 +56,10 @@ class Teacher(models.Model):
         return UserMaker.create(Teacher, is_teacher=True, **kwargs)
     
     def __str__(self):
-        return self.user.__str__()
+        school = ""
+        if self.school:
+            school = f"({self.school.name})"
+        return f"{self.user.str__2()} {school}"
     
     def get_availability(self):
         return json.loads(self.availability)
@@ -66,7 +73,7 @@ class Admin(models.Model):
         return UserMaker.create(Admin, is_admin=True, **kwargs)
     
     def __str__(self):
-        return self.user.__str__()
+        return self.user.str__2("Admin. ")
     
 
 faker = Faker()

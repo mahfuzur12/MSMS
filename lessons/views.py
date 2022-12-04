@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, UpdateView
+from django.shortcuts import get_object_or_404
 
-from lessons.forms import AvailabilityForm, LessonForm
+from lessons.forms import AvailabilityForm, LessonAdminForm, LessonForm
 from lessons.models import Lesson
 from msms.models import Student, Teacher, User
 
@@ -70,6 +71,35 @@ class RequestLesson(LoginRequiredMixin, CreateView):
         return redirect('view_lessons')
     
 
+class EditLesson(LoginRequiredMixin, UpdateView):
+    model = Lesson
+    form_class = LessonAdminForm
+    template_name = "editlesson.html"
+    
+    def get_object(self, *args, **kwargs):
+        lesson = get_object_or_404(Lesson, pk=self.kwargs['pk'])
+        return lesson
+
+    def get_success_url(self, *args, **kwargs):
+        return redirect("home")
+    
+    '''
+    def form_valid(self, form):
+        lesson:Lesson = form.save()
+        student = None
+        if self.request.user.is_student:
+            student = Student.objects.get(user=self.request.user)
+        else:
+            # user shoudln't be on this page, send home!
+            messages.add_message(self.request, messages.INFO, "Non students can't view lessons!?")
+            return redirect('home')
+
+        lesson.student = student
+        lesson.save()
+        messages.add_message(self.request, messages.INFO, "Successfully created a lesson!")
+        return redirect('view_lessons')'''
+    
+
 class ViewLessons(LoginRequiredMixin, ListView):
     model = Lesson
     template_name = "viewlessons.html"
@@ -91,7 +121,7 @@ class ViewLessons(LoginRequiredMixin, ListView):
             kwarg = {"teacher__school":school}
 
             
-        return Lesson.objects.filter(**kwarg)
+        return Lesson.objects.filter(**kwarg).order_by("state")
     
     
     
