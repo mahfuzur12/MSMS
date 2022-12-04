@@ -28,5 +28,6 @@ urlpatterns = [
     path('login/', views.login_request, name='login'),
     path('feed/', views.feed, name='feed'),
     path('logout/', views.logout_view, name='logout'),
-    path('lesson/', include('lessons.urls'))
+    path('lesson/', include('lessons.urls')),
+    path('profile/', views.view_profile, name='view_profile')
 ]

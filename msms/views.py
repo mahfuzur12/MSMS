@@ -57,3 +57,7 @@ def feed(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+def view_profile(request):
+    args = {'user': request.user}
+    return render(request, 'profile.html', args) 
