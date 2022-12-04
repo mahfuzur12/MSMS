@@ -10,6 +10,16 @@
         <p>First name: {{ user.first_name }}</p>
         <p>Last name: {{ user.last_name }}</p>
         <p>Email: {{ user.email }}</p>
+        {% if user.is_admin or user.is_teacher %}
+            <p>School: {{ user.admin.school.name }}</p>
+        {% endif %}
+        <p>Role: 
+            {% if user.is_student %}Student
+            {% elif user.is_teacher %}Teacher
+            {% elif user.is_admin %}School Admin
+            {% elif user.is_superuser %}Super User
+            {% endif %}
+        </p>
         <a href="{% url 'feed' %}">Feed</a>
         <a href="{% url 'edit_profile' %}">Edit profile</a>
     </body>
