@@ -3,8 +3,8 @@ from django.shortcuts import redirect, render
 from django.views.generic import CreateView
 from msms.form import StudentSignUpForm, TeacherSignUpForm, EditProfileForm
 from msms.models import User, Student, Teacher, Admin
-from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.models import User
 
@@ -75,3 +75,17 @@ def edit_profile(request):
         args = {'form': form}
         return render(request, 'edit_profile.html', args)
 
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('/profile')
+        else:
+            return redirect('/change-password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args = {'form': form}
+        return render(request, 'change_password.html', args)
