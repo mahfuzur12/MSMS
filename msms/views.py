@@ -4,7 +4,11 @@ from django.views.generic import CreateView
 from msms.form import StudentSignUpForm, TeacherSignUpForm, AdminSignUpForm
 from msms.models import User, Student, Teacher, Admin
 <<<<<<< HEAD
+<<<<<<< HEAD
 from django.contrib.auth.forms import AuthenticationForm
+=======
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
+>>>>>>> parent of dd8a856 (Change password works)
 =======
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 >>>>>>> parent of dd8a856 (Change password works)
@@ -91,4 +95,7 @@ def edit_profile(request):
         args = {'form': form}
         return render(request, 'edit_profile.html', args)
 
+<<<<<<< HEAD
+>>>>>>> parent of dd8a856 (Change password works)
+=======
 >>>>>>> parent of dd8a856 (Change password works)

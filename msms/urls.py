@@ -34,5 +34,8 @@ urlpatterns = [
 =======
     path('profile/', views.view_profile, name='view_profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile')
+<<<<<<< HEAD
+>>>>>>> parent of dd8a856 (Change password works)
+=======
 >>>>>>> parent of dd8a856 (Change password works)
 ]
