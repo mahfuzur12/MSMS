@@ -1,7 +1,7 @@
 from django.http import request
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
-from msms.form import StudentSignUpForm, TeacherSignUpForm
+from msms.form import StudentSignUpForm, TeacherSignUpForm, EditProfileForm
 from msms.models import User, Student, Teacher, Admin
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth import login, logout, authenticate
@@ -65,13 +65,13 @@ def view_profile(request):
 
 def edit_profile(request):
     if request.method == 'POST':
-        form = UserChangeForm(request.POST, instance=request.user)
+        form = EditProfileForm(request.POST, instance=request.user)
 
         if form.is_valid():
             form.save()
             return redirect('/profile')
     else:
-        form = UserChangeForm(instance=request.user)
+        form = EditProfileForm(instance=request.user)
         args = {'form': form}
         return render(request, 'edit_profile.html', args)
 

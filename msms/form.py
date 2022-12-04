@@ -1,9 +1,10 @@
 from enum import unique
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
 from django.core.validators import RegexValidator
 from django.db import transaction
 from .models import Student, Teacher, Admin, User
+from django.contrib.auth.models import User
 
 class StudentSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
@@ -56,4 +57,15 @@ class TeacherSignUpForm(UserCreationForm):
         teacher = Teacher.objects.create(user=user)
         teacher.availability = self.cleaned_data.get('availability')
         return teacher
-    
+
+class EditProfileForm(UserChangeForm):
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'first_name',
+            'last_name',
+            'password'
+        )
+
