@@ -1,0 +1,15 @@
+{% extends "base_page.html"%}
+
+{% block content%}
+<div class="pt-3 px-3">
+    <h1 class="pb-3">Edit a lesson request</h1>
+    {% for message in messages %}
+        <p><b>{{ message }}</b></p>
+    {% endfor %}
+    <form action="{% url 'request_lesson' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn btn-primary" type = "submit" value="Save">
+    </form>
+</div>
+{% endblock %}
