@@ -1,15 +1,19 @@
 {% extends "base_page.html"%}
 
 {% block content%}
-<div class="pt-3 px-3">
-    <h1 class="pb-3">Edit a lesson request</h1>
-    {% for message in messages %}
-        <p><b>{{ message }}</b></p>
-    {% endfor %}
-    <form action="{% url 'request_lesson' %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input class="btn btn-primary" type = "submit" value="Save">
-    </form>
-</div>
+{% load static %}
+<link rel="stylesheet" href="{% static 'lessons/styles.css' %}">
+
+<h1 class="pb-3">Edit a lesson request</h1>
+{% for message in messages %}
+    <p><b>{{ message }}</b></p>
+{% endfor %}
+<form action="{% url 'request_lesson' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input class="btn btn-primary" type="submit" value="Save">
+    {% if user.is_admin or user.is_superuser %}{% endif %}
+    <input class="btn btn-primary" type="button"  value="Book">
+    <input class="btn btn-danger" type="button" value="Cancel">
+</form>
 {% endblock %}
