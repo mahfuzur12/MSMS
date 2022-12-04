@@ -84,6 +84,7 @@ def change_password(request):
             update_session_auth_hash(request, form.user)
             return redirect('/profile')
         else:
+            messages.add_message(request, messages.ERROR, "Try again!")
             return redirect('/change-password')
     else:
         form = PasswordChangeForm(user=request.user)

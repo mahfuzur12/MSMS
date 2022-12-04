@@ -4,7 +4,6 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.db import transaction
 from .models import Student, Teacher, Admin, User
-from django.contrib.auth.models import User
 
 class StudentSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
