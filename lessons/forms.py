@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 from django.forms import ModelForm
 
@@ -14,11 +15,38 @@ class AvailabilityForm(forms.Form):
     sunday = forms.BooleanField(required=False)
     
     
+class LessonMeta():
+    model = Lesson
+    fields = ['num_lessons',
+                'interval',
+                'teacher',
+                'duration',
+                'first_lesson_date']
+    
+    widgets = {
+        'first_lesson_date':forms.widgets.DateInput(attrs={'type': 'date'})
+    }
+
+
 class LessonForm(ModelForm):
-    class Meta:
-        model = Lesson
-        fields = ['num_lessons',
+    class Meta(LessonMeta):
+        pass
+        
+    def clean_first_lesson_date(self):
+        '''Make sure date is today or in the future'''
+        date = self.cleaned_data['first_lesson_date']
+        if date < datetime.date.today():
+            raise forms.ValidationError("Date must be today or in the future")
+        return date
+
+
+class LessonAdminForm(LessonForm):
+    '''Normal Lesson form but also includes student and state field'''
+    class Meta(LessonMeta):
+        fields = ['state',
+                  'num_lessons',
                   'interval',
+                  'student',
                   'teacher',
                   'duration',
                   'first_lesson_date']
