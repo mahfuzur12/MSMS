@@ -1,11 +1,12 @@
 from django.http import request
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
-from msms.form import StudentSignUpForm, TeacherSignUpForm, AdminSignUpForm
+from msms.form import StudentSignUpForm, TeacherSignUpForm, EditProfileForm
 from msms.models import User, Student, Teacher, Admin
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib import messages
+from django.contrib.auth.models import User
 
 def home(request):
     return render(request, 'home.html')
@@ -33,16 +34,6 @@ class teacher_sign_up(CreateView):
         messages.add_message(self.request, messages.INFO, "Successfully signed up!")
         return redirect('home')
     
-class admin_sign_up(CreateView):
-    model = User
-    form_class = AdminSignUpForm
-    template_name = 'admin_sign_up.html'
-    
-    def form_valid(self, form):
-        user = form.save()
-        messages.add_message(self.request, messages.INFO, "Successfully signed up!")
-        return redirect('home')  
-    
 def login_request(request):
     if request.method=='POST':
         form = AuthenticationForm(data=request.POST)
@@ -67,3 +58,34 @@ def feed(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+def view_profile(request):
+    args = {'user': request.user}
+    return render(request, 'profile.html', args)
+
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            return redirect('/profile')
+    else:
+        form = EditProfileForm(instance=request.user)
+        args = {'form': form}
+        return render(request, 'edit_profile.html', args)
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('/profile')
+        else:
+            return redirect('/change-password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args = {'form': form}
+        return render(request, 'change_password.html', args)
