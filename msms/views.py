@@ -6,6 +6,7 @@ from msms.models import User, Student, Teacher, Admin
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
+from django.contrib.auth.models import User
 
 def home(request):
     return render(request, 'home.html')
@@ -57,3 +58,7 @@ def feed(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+def profile(request):
+    args = {'user': request.user}
+    return render(request, 'profile.html', args)
