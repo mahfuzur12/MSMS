@@ -33,12 +33,15 @@ class Command(BaseCommand):
         
     
     def random_user(self):
+        email = self.faker.email()
+        # username field is required, 
+        # just make it the same as email
         return {
-                "username":self.faker.user_name(),
+                "username":email,
                 "first_name":self.faker.first_name(),
                 "last_name":self.faker.last_name(),
                 "password":self.faker.word(),
-                "email":self.faker.email()
+                "email":email
                 }
             
             
