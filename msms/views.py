@@ -1,7 +1,7 @@
 from django.http import request
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
-from msms.form import StudentSignUpForm, TeacherSignUpForm, AdminSignUpForm
+from msms.form import StudentSignUpForm, TeacherSignUpForm
 from msms.models import User, Student, Teacher, Admin
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
@@ -32,16 +32,6 @@ class teacher_sign_up(CreateView):
         user = form.save()
         messages.add_message(self.request, messages.INFO, "Successfully signed up!")
         return redirect('home')
-    
-class admin_sign_up(CreateView):
-    model = User
-    form_class = AdminSignUpForm
-    template_name = 'admin_sign_up.html'
-    
-    def form_valid(self, form):
-        user = form.save()
-        messages.add_message(self.request, messages.INFO, "Successfully signed up!")
-        return redirect('home')  
     
 def login_request(request):
     if request.method=='POST':
