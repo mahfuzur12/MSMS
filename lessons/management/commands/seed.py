@@ -87,6 +87,17 @@ class Command(BaseCommand):
             # new student created
             student = Student.create(first_name="John", last_name="Doe", password="Password123", email="john.doe@example.org")
             self.save_object(student)
+            
+        #check if teacher account already exists
+        user = exists(User, email="benson@benson.com")
+        if user:
+            print("Updating school for default teacher")
+            user.teacher.school = school
+            self.save_object(user.teacher)
+        else:
+            # new teacher created
+            teacher = Teacher.create(first_name="Bob", last_name="Benson", password="abcdefghijk123", email="benson@benson.com", school=school)
+            self.save_object(teacher)
         
         # check if admin account already exists
         user = exists(User, email="petra.pickles@example.org")
