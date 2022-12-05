@@ -8,12 +8,13 @@
 {% for message in messages %}
     <p><b>{{ message }}</b></p>
 {% endfor %}
-<form action="{% url 'request_lesson' %}" method="post">
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input class="btn btn-primary" type="submit" value="Save">
-    {% if user.is_admin or user.is_superuser %}{% endif %}
-    <input class="btn btn-primary" type="button"  value="Book">
-    <input class="btn btn-danger" type="button" value="Cancel">
+    {% if user.is_admin or user.is_superuser %}
+    <input class="btn btn-primary" type="button" value="Book" onclick="window.location.href='{% url 'book_lesson' object.id %}'">
+    {% endif %}
+    <input class="btn btn-danger" type="button" value="Cancel Lesson" onclick="window.location.href='{% url 'cancel_lesson' object.id %}'">
 </form>
 {% endblock %}
