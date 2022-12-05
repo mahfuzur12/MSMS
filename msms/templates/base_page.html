@@ -10,10 +10,16 @@
         <span class="w-100 navbar shadow px-2 border border-black" >
             
             <div>
-                <b>
-                {% if user.is_authenticated %}
+                <b>   
                 <a href="{% url 'home' %}" class="header-button">Home</a>
+                {% if user.is_authenticated %}
+                {% if user.is_student or user.is_teacher %}
+                <a href="{% url 'availability' %}" class="header-button">Availability</a>
+                {% endif %}
                 <a href="{% url 'lesson_options' %}" class="header-button">Lessons</a>
+                {% if not user.is_teacher %}
+                <a href="{% url 'finances' %}" class="header-button">Finances</a>
+                {% endif %}
                 <a href="{% url 'view_profile' %}" class="header-button">Profile</a>
                 {% if user.is_superuser %}
                 <a href="{% url 'admin:index' %}" class="header-button">Admin</a>
