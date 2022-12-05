@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.db import models
+from django.forms import ValidationError
 from django.utils import timezone
 
 from msms.models import Student, Teacher
@@ -44,15 +45,15 @@ class Lesson(models.Model):
         
         self.state = "B"
         invoice = Invoice.create(
-            amount=COST_PER_LESSON,
-            remaining_cost=COST_PER_LESSON * self.num_lessons,
+            amount=COST_PER_LESSON * self.num_lessons,
             student=self.student,
             lesson=self)
         try:
             self.save()
             invoice.save()
             return invoice
-        except:
+        except ValidationError as e:
+            print(e.messages)
             self.state = "R"
             self.save()
             return None
@@ -80,9 +81,8 @@ class Invoice(models.Model):
     This details how much is remaining to be paid, the invoice number.
     There is also a method to get the unique reference number'''
     
-    # amount per lesson
+    # total amount to be paid
     amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
-    remaining_cost = models.DecimalField(max_digits=20, default=0, decimal_places=2)
     number = models.IntegerField()
     date = models.DateField(default=timezone.now)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
