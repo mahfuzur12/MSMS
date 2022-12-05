@@ -5,10 +5,7 @@
 <link rel="stylesheet" href="{% static 'lessons/styles.css' %}">
 
 <div class="mt-5 text-center">
-    {% if not user.is_teacher %}
     <a class="big-button" href="{% url 'request_lesson' %}">Request A Lesson</a>
-    {% endif %}
-    
     <a class="big-button mt-3" href="{% url 'view_lessons' %}">
         View
         {% if user.is_superuser %}All
