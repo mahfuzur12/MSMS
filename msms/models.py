@@ -80,9 +80,7 @@ faker = Faker()
 class UserMaker():
     def create(cls, first_name, last_name, password, email, username=None, is_admin=False, is_student=False, is_teacher=False, **kwargs):
         if not username:
-            username = faker.user_name()
-            while User.objects.filter(username=username).exists():
-                username = faker.user_name()
+            username = email
                 
         user = User(username=username, first_name=first_name, last_name=last_name, password=make_password(password), email=email, 
                     is_student=is_student, is_admin=is_admin, is_teacher=is_teacher)
