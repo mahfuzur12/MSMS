@@ -1,0 +1,9 @@
+{% extends "base_page.html"%}
+
+{% block content%}
+<h1>Finances</h1>
+
+{% if user.is_student %}
+<h3>Balance: {{user.student.balance}} </h3>
+{% endif %}
+{% endblock %}
