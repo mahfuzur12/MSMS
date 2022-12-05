@@ -10,9 +10,11 @@
         {% for message in messages %}
             <p><b>{{ message }}</b></p>
         {% endfor %}
-        <p><a href="{% url 'login' %}">Log in</a></p>
-        <p><a href="{% url 'register' %}">Sign up</a></p>
-        <p><a href="{% url 'reset_password' %}">Forgot password?</a></p>
+        <div class="mt-5">
+            <a class="big-button" href="{% url 'login' %}">Log in</a>
+            <a class="big-button" href="{% url 'register' %}">Sign up</a>
+            <a class="big-button" href="{% url 'reset_password' %}">Forgot password?</a>
+        </div>
     </body>
 </html>
 {% endblock%}
