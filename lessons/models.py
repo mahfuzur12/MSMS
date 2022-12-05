@@ -4,10 +4,11 @@ from django.db import models
 from django.utils import timezone
 
 from msms.models import Student, Teacher
-from lessons.schoolmodel import School
 
     
 class Transfer(models.Model):
+    '''Represents a bank transfer:
+    Includes reference number which should be in the form (stud.id-inv.num)'''
     reference = models.CharField(max_length=30)
     state = models.CharField(max_length=20, choices=[("I","incoming"),("P","processed")], default="I")
     amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
@@ -17,12 +18,13 @@ class Transfer(models.Model):
 COST_PER_LESSON = 20
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-def num_to_day():
+def current_day():
+    '''A function which converts the current day of the week index into a word'''
     return DAYS[timezone.now().weekday()]
 
 class Lesson(models.Model):
     '''A model which represents a group of lessons.
-    They are assumed to be one a week'''
+    They are assumed to be one a week, on the same day and same duration'''
     
     # choices from 1-10
     num_lessons = models.IntegerField(choices=[(num, num) for num in range(1, 11)], default=1)
@@ -33,9 +35,10 @@ class Lesson(models.Model):
     duration = models.DurationField(choices=[(timedelta(minutes=mins), timedelta(minutes=mins)) for mins in [30, 45, 60]], default=30)
     state = models.CharField(max_length=20, choices=[("R","request"),("B","booking"),("C","cancelled")], default="R")
     first_lesson_date = models.DateField(default=timezone.now)
-    day = models.CharField(max_length=10, choices=[(day, day) for day in DAYS], default=num_to_day)
+    day = models.CharField(max_length=10, choices=[(day, day) for day in DAYS], default=current_day)
       
     def make_booking(self):
+        '''Converts this lesson into a booking. Creates a corresponding invoice too'''
         if self.state == "B":
             return
         
@@ -56,6 +59,7 @@ class Lesson(models.Model):
     
     
     def cancel(self):
+        '''Cancels this lesson, removing a related invoice if applicable'''
         if self.state == "C":
             return
         
@@ -71,7 +75,11 @@ class Lesson(models.Model):
         return f"Lesson({self.pk}) {self.student} - {self.teacher}"
     
     
-class Invoice(models.Model):   
+class Invoice(models.Model):
+    '''A model which represents the invoice of a lesson. 
+    This details how much is remaining to be paid, the invoice number.
+    There is also a method to get the unique reference number'''
+    
     # amount per lesson
     amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
     remaining_cost = models.DecimalField(max_digits=20, default=0, decimal_places=2)
@@ -81,6 +89,8 @@ class Invoice(models.Model):
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE)   
     
     def create(student, **kwargs):
+        '''Creates an invoice automatically generating the correct invoice number'''
+        
         # get the next available invoice number
         number = Invoice.objects.filter(student=student).__len__() + 1
         return Invoice(student=student, number=number,**kwargs)
@@ -91,4 +101,5 @@ class Invoice(models.Model):
     
     
     def ref(self):
+        '''Unique invoice reference number'''
         return f"{self.student.user.pk}-{self.number}"
