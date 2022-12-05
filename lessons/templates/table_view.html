@@ -1,0 +1,30 @@
+<div style="overflow-x:auto">
+    <table class="table-striped border mx-auto table" style="width:max-content">
+        <thead class="bg-secondary text-light">
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Teacher</th>
+                <th>No. lessons</th>
+                <th>Day</th>
+                <th>State</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for lesson in list_of_lessons %}
+            <tr {% if not user.is_student or lesson.state == "R" %}
+                class="hover-end"
+                onclick="window.location.href='{% url 'edit_lesson' lesson.id %}'" data-toggle="tooltip" title="click to edit lesson"
+                {% endif %}>
+                
+                <td>{{lesson.first_lesson_date}}</td>
+                <td>{{lesson.student}}</td>
+                <td>{{lesson.teacher}}</td>
+                <td>{{lesson.num_lessons}}</td>
+                <td>{{lesson.day}}</td>
+                <td>{{lesson.get_state_display}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
