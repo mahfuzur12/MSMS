@@ -13,7 +13,8 @@ class TeacherSignUpFormTestCase(TestCase):
             'first_name': 'Jane',
             'last_name': 'Doe',
             'email': 'janedoe@example.org',
-            'password': 'signupform123'
+            'password1': 'signupform123',
+            'password2': 'signupform123'
         }
         
     def test_valid_teacher_sign_up_form(self):
@@ -22,11 +23,11 @@ class TeacherSignUpFormTestCase(TestCase):
         
     def test_teacher_sign_up_form(self):
         response = self.client.post(reverse('teacher_sign_up'), data={
-            'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
             'email': self.email,
-            'age': self.age,
-            'password1': self.password,
-            'password2': self.password
+            'password1': self.password1,
+            'password2': self.password2
         })
         self.assertEqual(response.status_code, 302)
 
