@@ -4,10 +4,16 @@ from email.policy import default
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from faker import Faker
-from lessons.schoolmodel import School
 
 from msms.managers import UserManager
 
+
+class School(models.Model):
+    name = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return f"({self.pk}) {self.name}"
+    
 
 class User(AbstractUser):
     is_student = models.BooleanField(default=False)
@@ -81,9 +87,12 @@ class UserMaker():
     def create(cls, first_name, last_name, password, email, username=None, is_admin=False, is_student=False, is_teacher=False, **kwargs):
         if not username:
             username = email
+            while User.objects.filter(username=username).exists():
+                username = faker.user_name()
                 
         user = User(username=username, first_name=first_name, last_name=last_name, password=make_password(password), email=email, 
                     is_student=is_student, is_admin=is_admin, is_teacher=is_teacher)
         user.full_clean()
         user.save()
         return cls(user=user, **kwargs)
+
