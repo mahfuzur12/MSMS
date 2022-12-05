@@ -18,10 +18,9 @@ class AvailabilityForm(forms.Form):
 class LessonMeta():
     model = Lesson
     fields = ['num_lessons',
-                'interval',
-                'teacher',
-                'duration',
-                'first_lesson_date']
+              'interval',
+              'duration',
+              'first_lesson_date']
     
     widgets = {
         'first_lesson_date':forms.widgets.DateInput(attrs={'type': 'date'})
@@ -40,11 +39,31 @@ class LessonForm(ModelForm):
         return date
 
 
-class LessonAdminForm(LessonForm):
-    '''Normal Lesson form but also includes student and state field'''
+class LessonStudentForm(LessonForm):
+    '''Normal Lesson form but also includes student instead of teacher'''
     class Meta(LessonMeta):
-        fields = ['state',
-                  'num_lessons',
+        fields = ['num_lessons',
+                  'interval',
+                  'teacher',
+                  'duration',
+                  'first_lesson_date']
+
+
+class LessonTeacherForm(LessonForm):
+    '''Normal Lesson form but also includes student instead of teacher'''
+    class Meta(LessonMeta):
+        fields = ['num_lessons',
+                  'interval',
+                  'student',
+                  'duration',
+                  'first_lesson_date']
+        
+
+
+class LessonAdminForm(LessonForm):
+    '''Normal Lesson form but also includes student'''
+    class Meta(LessonMeta):
+        fields = ['num_lessons',
                   'interval',
                   'student',
                   'teacher',
