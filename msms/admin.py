@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Teacher, Student, Admin
+from .models import User, Teacher, Student, Admin, School
 
 
 @admin.register(User)
@@ -33,3 +33,9 @@ class TeacherAdmin(admin.ModelAdmin):
     list_display = ['user',
                     'school',
                    'availability']
+    
+    
+@admin.register(School)
+class SchoolAdmin(admin.ModelAdmin):
+    list_display = ['id',
+                    'name']
