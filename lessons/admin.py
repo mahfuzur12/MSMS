@@ -2,14 +2,6 @@ from django.contrib import admin
 from lessons.models import *
 
 
-# Registered models.
-
-@admin.register(School)
-class SchoolAdmin(admin.ModelAdmin):
-    list_display = ['id',
-                    'name']
-    
-    
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
     list_display = ['id',

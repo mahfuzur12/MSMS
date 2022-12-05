@@ -26,19 +26,25 @@ def availability(request):
         message += "Check your lessons"
     else:
         # user shoudln't be on this page, send home!
+        messages.add_message(request, messages.INFO, "This page is not available to you")
         return redirect('home')
     
     if request.method == 'POST':
+        # recreate form from existing details given in POST
         form = AvailabilityForm(request.POST)
         if form.is_valid():
+            # get new availability from form
             newavail = [form.cleaned_data[day] for day in DAYS]
             user = model.objects.get(user=request.user)
+            
+            # converts newavail list into string
             user.availability = json.dumps(newavail)
             user.save()
             
             messages.add_message(request, messages.SUCCESS, message=message)
             return redirect('availability')
 
+    # create form using users pre-existing availability
     days = get_availability(request.user, model)
     form = AvailabilityForm(days)
     return render(request, 'availability.html', {'form':form})
@@ -46,6 +52,8 @@ def availability(request):
 
 DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 def get_availability(user:User, model:type[Student|Teacher]):
+    '''Returns a dictionary mapping of a day of the week to the user's availability on that day'''
+    
     avail_list:list = model.objects.get(user=user).get_availability()
     return dict(zip(DAYS, avail_list))
 
@@ -57,6 +65,8 @@ def options(request):
 
 @login_required(login_url='login')
 def request_lesson(request):
+    '''Redirects user to a specific type of request page depending on user type'''
+    
     if request.user.is_student:
         return redirect('student_request_lesson')
     elif request.user.is_teacher:
@@ -66,6 +76,9 @@ def request_lesson(request):
 
 
 class RequestLesson(LoginRequiredMixin, CreateView):
+    '''A base request lesson form. Includes success page, 
+    and what to do when the form is valid'''
+    
     model = Lesson
     form_class = LessonForm
     template_name = "requestlesson.html"
@@ -88,6 +101,9 @@ class RequestLesson(LoginRequiredMixin, CreateView):
 
 
 class StudentRequestLesson(RequestLesson):
+    '''Modifies form class of the base RequestLesson class,
+    redirects used to home if user is not a student'''
+    
     form_class = LessonStudentForm
     
     def get(self, request, *args, **kwargs):
@@ -100,6 +116,9 @@ class StudentRequestLesson(RequestLesson):
     
     
 class TeacherRequestLesson(RequestLesson):
+    '''Modifies form class of the base RequestLesson class,
+    redirects used to home if user is not a teacher'''
+    
     form_class = LessonTeacherForm
     
     def get(self, request, *args, **kwargs):
@@ -112,6 +131,9 @@ class TeacherRequestLesson(RequestLesson):
     
     
 class AdminRequestLesson(RequestLesson):
+    '''Modifies form class of the base RequestLesson class,
+    redirects used to home if user is not an admin'''
+    
     form_class = LessonAdminForm
     
     def get(self, request, *args, **kwargs):
@@ -124,6 +146,8 @@ class AdminRequestLesson(RequestLesson):
     
     
 def edit_lesson(request, pk:int):
+    '''Redirects user to a specific type of edit page depending on user type'''
+    
     if request.user.is_student:
         return redirect('student_edit_lesson', pk)
     elif request.user.is_teacher:
@@ -133,6 +157,9 @@ def edit_lesson(request, pk:int):
 
 
 class EditLesson(LoginRequiredMixin, UpdateView):
+    '''A base edit lesson form. Includes success page, 
+    and what to do when the form is valid'''
+    
     model = Lesson
     form_class = LessonForm
     template_name = "editlesson.html"
@@ -153,10 +180,13 @@ class EditLesson(LoginRequiredMixin, UpdateView):
 
 
 class StudentEditLesson(EditLesson):
+    '''Modifies form class of the base EditLesson class, 
+    redirects used to home if user is not a student'''
+    
     form_class = LessonStudentForm
     
     def get(self, request, *args, **kwargs):
-        # if user must be student to see this page
+        # user must be student to see this page
         if not request.user.is_student:
             messages.add_message(self.request, messages.INFO, "This page is not available to you")
             return redirect('home')
@@ -170,10 +200,13 @@ class StudentEditLesson(EditLesson):
 
 
 class TeacherEditLesson(EditLesson):
+    '''Modifies form class of the base EditLesson class, 
+    redirects used to home if user is not a teacher'''
+    
     form_class = LessonTeacherForm
     
     def get(self, request, *args, **kwargs):
-        # if user must be teacher to see this page
+        # user must be teacher to see this page
         if not request.user.is_teacher:
             messages.add_message(self.request, messages.INFO, "This page is not available to you")
             return redirect('home')
@@ -187,10 +220,13 @@ class TeacherEditLesson(EditLesson):
 
 
 class AdminEditLesson(EditLesson):
+    '''Modifies form class of the base EditLesson class, 
+    redirects used to home if user is not an admin'''
+    
     form_class = LessonAdminForm
     
     def get(self, request, *args, **kwargs):
-        # if user must be teacher to see this page
+        # user must be amin to see this page
         if not (request.user.is_admin or request.user.is_superuser):
             messages.add_message(self.request, messages.INFO, "This page is not available to you")
             return redirect('home')
@@ -206,26 +242,34 @@ class AdminEditLesson(EditLesson):
 
 
 class ViewLessons(LoginRequiredMixin, ListView):
+    '''A view for displaying lessons on the page'''
+    
     model = Lesson
     template_name = "viewlessons.html"
     context_object_name = "lesson_list"
     
     def get_queryset(self):
         user:User = self.request.user
+        # by default display every lesson
         kwarg = {"id__gte":0}
+        
         if user.is_student:
+            # display lessons where this user is the student
             student = Student.objects.get(user=user)
             kwarg = {"student":student}
         
         elif user.is_teacher:
+            # display lessons where this user is the teacher
             teacher = Teacher.objects.get(user=user)
             kwarg = {"teacher":teacher}
             
         elif user.is_admin:
+            # display lessons where the teacher is from the admin's school
             school = user.admin.school
             kwarg = {"teacher__school":school}
 
-            
+        
+        # seperate booked, requested and cancelled lessons   
         qs = {"booked":Lesson.objects.filter(state="B",**kwarg).order_by("state", "-first_lesson_date"),
               "requested":Lesson.objects.filter(state="R",**kwarg).order_by("state", "-first_lesson_date"),
               "cancelled":Lesson.objects.filter(state="C",**kwarg).order_by("state", "-first_lesson_date")}
@@ -235,6 +279,9 @@ class ViewLessons(LoginRequiredMixin, ListView):
     
 @login_required(login_url="login")
 def cancel_lesson(request, pk:int):
+    '''A view which cancels a lesson.
+    Cancels from Non-superuser accounts have some restrictions'''
+    
     lesson = get_object_or_404(Lesson, pk=pk)
     if request.user.is_admin:
         # redirect if lesson if not taught by teacher from the same school as admin
@@ -243,6 +290,7 @@ def cancel_lesson(request, pk:int):
             return redirect('home')
     
     if request.user.is_student or request.user.is_teacher:
+        # redirect if lesson is not taught by or studied by user
         if lesson.teacher.user != request.user and lesson.student.user != request.user:
             messages.add_message(request, messages.INFO, "This page is not available to you")
             return redirect('home')
@@ -255,11 +303,21 @@ def cancel_lesson(request, pk:int):
 
 @login_required(login_url="login")
 def book_lesson(request, pk:int):
+    '''A view which cancels a lesson.
+    Cancels from Non-superuser accounts have some restrictions'''
+    
     if not (request.user.is_admin or request.user.is_superuser):
+        # only admins and superusers can book lessons
         messages.add_message(request, messages.INFO, "This page is not available to you")
         return redirect('home')
     
     lesson = get_object_or_404(Lesson, pk=pk)
+    if request.user.is_admin:
+        # redirect if lesson if not taught by teacher from the same school as admin
+        if lesson.teacher.school != request.user.admin.school:
+            messages.add_message(request, messages.INFO, "This page is not available to you")
+            return redirect('home')
+     
     lesson.make_booking()
     messages.add_message(request, messages.INFO, "Succesfully booked lesson")
     return redirect("view_lessons") 
@@ -267,4 +325,5 @@ def book_lesson(request, pk:int):
     
 @login_required(login_url="login")
 def finances(request):
+    '''A view for seeing a user's finances'''
     return render(request, "finances.html")

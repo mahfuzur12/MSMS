@@ -10,11 +10,14 @@ from msms.models import *
 
 
 def exists(model:type[Model], **kwargs):
-        result = model.objects.filter(**kwargs)
-        if result.exists():
-            return result.first()
-        
-        return None
+    '''Returns first record matching query if at least one exists.
+    Else returns None'''
+    
+    result = model.objects.filter(**kwargs)
+    if result.exists():
+        return result.first()
+    
+    return None
     
 
 class Command(BaseCommand):
@@ -26,6 +29,8 @@ class Command(BaseCommand):
         
         
     def handle(self, *args, **options):
+        '''Adds all default users and some random ones'''
+        
         print("Seeding")    
         self.add_default_members()
         self.fill_database()
@@ -33,6 +38,8 @@ class Command(BaseCommand):
         
     
     def random_user(self):
+        '''Creates a dictionary of random user details'''
+        
         email = self.faker.email()
         # username field is required, 
         # just make it the same as email
@@ -46,6 +53,9 @@ class Command(BaseCommand):
             
             
     def save_object(self, object:Model):
+        '''Tries to save an object. Prints 'Saved object' and returns object if successful.
+        Else returns none and prints error meesage'''
+        
         try:
             object.full_clean()
             object.save()
@@ -57,7 +67,9 @@ class Command(BaseCommand):
            
             
     def persistently_save_user(self, model:type[Model], level=10, **kwargs,):
-        '''Will attempt to save a user with random details, accepts kwargs such as school'''
+        '''Will attempt to save a user with random details, accepts kwargs such as school.
+        Stops attempting to save if saving fails 10 times, likely there is another issue.'''
+        
         if level <= 0:
             print("Couldn't save user")
             # don't try this forever, very unlikely it will need more than 10 tries
@@ -73,6 +85,10 @@ class Command(BaseCommand):
     
     
     def add_default_members(self):
+        '''Adds the users required by the Assignment, a school and also a teacher account
+        includes Default School, John Doe (St), Bob Benson (T),  Petra Pickles (A),
+        and Marty Major (SA)'''
+        
         school = exists(School, name="Default School")
         if not school:
             school = School(name="Default School")
@@ -126,6 +142,10 @@ class Command(BaseCommand):
     
              
     def fill_database(self):
+        '''Fills the database with a school and some random users including 2 students and 2 teachers
+        Also creates 3 lessons, 2 of which are booked, one of which has a transfer associated
+        with it'''
+        
         school = exists(School, name="Default School")
         if not school:
             school = School(name="Default School")

@@ -6,6 +6,8 @@ from lessons.models import Lesson
 
 
 class AvailabilityForm(forms.Form):
+    '''Form for setting availability throughout a week.
+    True for available, False for not available'''
     monday = forms.BooleanField(required=False)
     tuesday = forms.BooleanField(required=False)
     wednesday = forms.BooleanField(required=False)
@@ -16,6 +18,7 @@ class AvailabilityForm(forms.Form):
     
     
 class LessonMeta():
+    '''By default LessonForms use these fields, model & widgets'''
     model = Lesson
     fields = ['num_lessons',
               'interval',
@@ -28,6 +31,7 @@ class LessonMeta():
 
 
 class LessonForm(ModelForm):
+    '''Includes a clean method to prevent date from being before today'''
     class Meta(LessonMeta):
         pass
         
@@ -40,7 +44,7 @@ class LessonForm(ModelForm):
 
 
 class LessonStudentForm(LessonForm):
-    '''Normal Lesson form but also includes student instead of teacher'''
+    '''Normal Lesson form but also includes student'''
     class Meta(LessonMeta):
         fields = ['num_lessons',
                   'interval',
@@ -50,7 +54,7 @@ class LessonStudentForm(LessonForm):
 
 
 class LessonTeacherForm(LessonForm):
-    '''Normal Lesson form but also includes student instead of teacher'''
+    '''Normal Lesson form but also includes teacher'''
     class Meta(LessonMeta):
         fields = ['num_lessons',
                   'interval',
@@ -61,7 +65,7 @@ class LessonTeacherForm(LessonForm):
 
 
 class LessonAdminForm(LessonForm):
-    '''Normal Lesson form but also includes student'''
+    '''Normal Lesson form but also includes student & teacher'''
     class Meta(LessonMeta):
         fields = ['num_lessons',
                   'interval',
