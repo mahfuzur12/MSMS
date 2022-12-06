@@ -33,6 +33,7 @@ AUTH_USER_MODEL = 'msms.User'
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
