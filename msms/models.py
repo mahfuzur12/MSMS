@@ -16,6 +16,8 @@ class School(models.Model):
     
 
 class User(AbstractUser):
+
+    URN = models.AutoField(primary_key=True)
     is_student = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)

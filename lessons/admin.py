@@ -27,6 +27,5 @@ class InvoiceAdmin(admin.ModelAdmin):
 class TransferAdmin(admin.ModelAdmin):
     list_display = ['id',
                     'reference',
-                    'state',
                     'amount',
                     'date_transferred']

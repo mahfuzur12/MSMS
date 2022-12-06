@@ -11,7 +11,6 @@ class Transfer(models.Model):
     '''Represents a bank transfer:
     Includes reference number which should be in the form (stud.id-inv.num)'''
     reference = models.CharField(max_length=30)
-    state = models.CharField(max_length=20, choices=[("I","incoming"),("P","processed")], default="I")
     amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
     date_transferred = models.DateField(default=timezone.now)
     
@@ -83,7 +82,7 @@ class Invoice(models.Model):
     
     # total amount to be paid
     amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
-    number = models.IntegerField()
+    number = models.CharField(max_length=60)
     date = models.DateField(default=timezone.now)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE)   
@@ -92,7 +91,7 @@ class Invoice(models.Model):
         '''Creates an invoice automatically generating the correct invoice number'''
         
         # get the next available invoice number
-        number = Invoice.objects.filter(student=student).__len__() + 1
+        number = f"{student.user.pk}-{Invoice.objects.filter(student=student).__len__() + 1}"
         return Invoice(student=student, number=number,**kwargs)
     
     
