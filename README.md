@@ -44,7 +44,7 @@ Run all tests with:
 $ python3 manage.py test
 ```
 
-TESTS MIGHT GIVE YOU AN ERROR OR FAILURE BUT THE APP WORKS FINE.
+TESTS MIGHT GIVE YOU ERRORS OR FAILURES BUT THE APP WORKS FINE.
 
 ## Sources
 The packages used by this application are specified in `requirements.txt`
