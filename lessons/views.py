@@ -51,7 +51,7 @@ def availability(request):
 
 
 DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-def get_availability(user:User, model:type[Student|Teacher]):
+def get_availability(user:User, model):
     '''Returns a dictionary mapping of a day of the week to the user's availability on that day'''
     
     avail_list:list = model.objects.get(user=user).get_availability()
