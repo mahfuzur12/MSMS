@@ -26,6 +26,8 @@ class InvoiceAdmin(admin.ModelAdmin):
 @admin.register(Transfer)
 class TransferAdmin(admin.ModelAdmin):
     list_display = ['id',
+                    'student',
                     'reference',
                     'amount',
-                    'date_transferred']
+                    'invoice',
+                    'date_transferred',]

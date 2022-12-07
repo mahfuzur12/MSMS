@@ -9,7 +9,7 @@ from django.views.generic import CreateView, ListView, UpdateView
 from django.shortcuts import get_object_or_404
 
 from lessons.forms import AvailabilityForm, LessonAdminForm, LessonForm, LessonStudentForm, LessonTeacherForm
-from lessons.models import Lesson
+from lessons.models import Lesson, Transfer, Invoice
 from msms.models import Student, Teacher, User
 
 
@@ -247,7 +247,7 @@ class ViewLessons(LoginRequiredMixin, ListView):
     model = Lesson
     template_name = "viewlessons.html"
     context_object_name = "lesson_list"
-    
+
     def get_queryset(self):
         user:User = self.request.user
         # by default display every lesson
@@ -323,7 +323,71 @@ def book_lesson(request, pk:int):
     return redirect("view_lessons") 
     
     
-@login_required(login_url="login")
-def finances(request):
+class Finances(LoginRequiredMixin, ListView):
     '''A view for seeing a user's finances'''
-    return render(request, "finances.html")
+
+    model = Transfer
+    template_name = "finances.html"
+    # name of dictionary containing list of transfers and invoices 
+    context_object_name = "confirmed_transfers_and_invoices_list"
+
+    def get_queryset(self):
+        user:User = self.request.user
+        kwarg = {"id__gte":0}
+
+        if user.is_student:
+            # studentTransfers; transfers to be viewed by students.
+            student = Student.objects.get(user=user)
+            kwarg = {"student":student}
+            qs = {"allTransfers":Transfer.objects.filter(**kwarg).order_by("-date_transferred"),
+            "allInvoices":Invoice.objects.filter(**kwarg).order_by("-date")}
+            return qs
+
+        elif user.is_teacher:
+            # redirect if teacher reaches finance page
+            messages.add_message(self.request, messages.INFO, "This page is not available to you")
+            return redirect('home')
+
+        elif user.is_admin:
+            # allTransfers; all transfers to be viewed by admin.
+            qs = {"allTransfers":Transfer.objects.all(),
+            "allInvoices":Transfer.objects.all()}
+            return qs
+
+        # by default display every transfer and invoice
+        qs = {"allTransfers":Transfer.objects.all(),
+            "allInvoices":Transfer.objects.all()}
+
+        return qs
+
+        
+
+
+@login_required(login_url="login")
+def confirmTransfer(request):
+    '''A view for confirming a bank transfer'''
+
+
+
+
+    return render(request, "confirmTransfer.html")
+
+@login_required(login_url="login")
+def view_invoice(request, pk:int):
+    '''A view for seeing an invoice'''
+
+    invoice = get_object_or_404(Invoice, pk=pk)
+    if request.user.is_admin:
+        # redirect if the admin is not in the same school the invoice comes from
+        if invoice.lesson.teacher.school != request.user.admin.school:
+            messages.add_message(request, messages.INFO, "This page is not available to you")
+            return redirect('home')
+    
+    if request.user.is_student:
+        # redirect if the user is not the student in the invoice
+        if invoice.student.user.pk != request.user.pk:
+            messages.add_message(request, messages.INFO, "This page is not available to you")
+            return redirect('home')
+
+    return render(request, 'invoice_view.html', {"invoice":invoice})
+

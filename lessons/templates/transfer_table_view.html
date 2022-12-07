@@ -1,0 +1,24 @@
+<div style="overflow-x:auto">
+    <table class="table-striped border mx-auto table" style="width:max-content">
+        <thead class="bg-secondary text-light">
+            <tr>
+                <th>Reference</th>
+                <th>Amount</th>
+                <th>Date Transferred</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for transfer in list_of_transfers %}
+            <tr {% if user.is_student or user.is_admin %}
+                class="hover-end"
+                onclick="window.location.href='{% url 'view_invoice' invoice.id %}'" data-toggle="tooltip" title="click to view Invoice"
+                {% endif %}>
+                
+                <td>{{transfer.reference}}</td>
+                <td>{{transfer.amount}}</td>
+                <td>{{transfer.date_transferred}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

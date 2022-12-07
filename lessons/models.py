@@ -5,15 +5,7 @@ from django.forms import ValidationError
 from django.utils import timezone
 
 from msms.models import Student, Teacher
-
-    
-class Transfer(models.Model):
-    '''Represents a bank transfer:
-    Includes reference number which should be in the form (stud.id-inv.num)'''
-    reference = models.CharField(max_length=30)
-    amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
-    date_transferred = models.DateField(default=timezone.now)
-    
+ 
     
 COST_PER_LESSON = 20
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -102,3 +94,22 @@ class Invoice(models.Model):
     def ref(self):
         '''Unique invoice reference number'''
         return f"{self.student.user.pk}-{self.number}"
+
+
+class Transfer(models.Model):
+    '''Represents a bank transfer:
+    Includes reference number which should be in the form (stud.id-inv.num)'''
+
+    #The URN of the Student who made the bank transfer
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    reference = models.CharField(max_length=30)
+    amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
+    date_transferred = models.DateField(default=timezone.now)
+    invoice = models.OneToOneField(Invoice, on_delete=models.CASCADE, null = True) 
+
+    def create(student, **kwargs):
+        '''Creates an invoice automatically generating the correct invoice number'''
+        
+        # get the next available invoice number
+        number = f"{student.user.pk}-{Invoice.objects.filter(student=student).__len__() + 1}"
+        return Invoice(student=student, number=number,**kwargs)
