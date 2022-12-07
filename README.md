@@ -2,10 +2,10 @@
 
 ## Team members
 The members of the team are:
-- *<Mahfuzur Rahman>*
-- *<Levi Pemindjafol Yeo>*
-- *<Haris Islam Malik>*
-- *<Mohammad Ruhan-Ur Rahman>*
+- Mahfuzur Rahman
+- Levi Pemindjafol Yeo
+- Haris Islam Malik
+- Mohammad Ruhan-Ur Rahman
 
 ## Project structure
 The project is called `msms` (Music School Management System).  It currently consists of two apps `lessons` and `msms` where all functionality resides.
