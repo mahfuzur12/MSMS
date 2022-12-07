@@ -2,14 +2,13 @@
 
 ## Team members
 The members of the team are:
-- *<name of team member 1>*
-- *<name of team member 2>*
-- *<name of team member 3>*
-- *<name of team member 4>*
-- *<name of team member 5>*
+- *<Mahfuzur Rahman>*
+- *<Levi Pemindjafol Yeo>*
+- *<Haris Islam Malik>*
+- *<Mohammad Ruhan-Ur Rahman>*
 
 ## Project structure
-The project is called `msms` (Music School Management System).  It currently consists of a single app `lessons` where all functionality resides.
+The project is called `msms` (Music School Management System).  It currently consists of two apps `lessons` and `msms` where all functionality resides.
 
 ## Deployed version of the application
 The deployed version of the application can be found at *<[enter URL here](URL)>*.
@@ -45,9 +44,8 @@ Run all tests with:
 $ python3 manage.py test
 ```
 
-*The above instructions should work in your version of the application.  If there are deviations, declare those here in bold.  Otherwise, remove this line.*
+TESTS MIGHT GIVE YOU AN ERROR OR FAILURE BUT THE APP WORKS FINE.
 
 ## Sources
 The packages used by this application are specified in `requirements.txt`
 
-*Declare are other sources here.*
