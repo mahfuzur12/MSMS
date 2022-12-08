@@ -178,10 +178,10 @@ class Command(BaseCommand):
         teacher = self.persistently_save_user(Teacher, school=school)
         lesson = Lesson(num_lessons=5, interval=1, student=student, teacher=teacher, duration=timedelta(minutes=30))
         self.save_object(lesson)
-        invoice = lesson.make_booking()
+        invoice:Invoice = lesson.make_booking()
         
         # make a transfer based on the invoice
-        transfer = Transfer(reference=invoice.ref(), amount=invoice.amount)
+        transfer = Transfer.create_from_invoice(invoice)
         self.save_object(transfer)
         
         
@@ -206,5 +206,5 @@ class Command(BaseCommand):
         invoice = lesson.make_booking()
         
         # make a transfer based on the invoice
-        transfer = Transfer(reference=invoice.ref(), amount=invoice.amount)
+        transfer = Transfer.create_from_invoice(invoice)
         self.save_object(transfer)

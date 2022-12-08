@@ -129,3 +129,7 @@ class Transfer(models.Model):
         # get the next available invoice number
         number = f"{student.user.pk}-{Invoice.objects.filter(student=student).__len__() + 1}"
         return Invoice(student=student, number=number,**kwargs)
+    
+    def create_from_invoice(invoice:Invoice):
+        '''Creates a transfer based on an invoice'''
+        return Transfer(reference=invoice.ref(), student=invoice.student, amount=invoice.amount, invoice=invoice)
