@@ -33,7 +33,11 @@ class Command(BaseCommand):
         
         print("Seeding")    
         self.add_default_members()
-        self.fill_database()
+        
+        # fill_database adds 4 students so 25 loops required to reach the requested 100
+        for fill_num in range(25):
+            print(f"Fill {fill_num + 1}/25")
+            self.fill_database()
         print("Finished Seeding")
         
     
@@ -142,14 +146,44 @@ class Command(BaseCommand):
     
              
     def fill_database(self):
-        '''Fills the database with a school and some random users including 2 students and 2 teachers
-        Also creates 3 lessons, 2 of which are booked, one of which has a transfer associated
+        '''Adds to the database a random school and some random users including 4 students and 4 teachers
+        Also creates 6 lessons, 4 of which are booked, 2 of which has a transfer associated
         with it'''
         
         school = exists(School, name="Default School")
-        if not school:
-            school = School(name="Default School")
-            self.save_object(school)
+        name = f"{faker.word()} School".capitalize()
+        while exists(School, name=name):
+            name = f"{faker.word()} School".capitalize()
+        school = School(name=name)
+        school.save()
+        
+        # add an admin to the school
+        admin = self.persistently_save_user(Admin, school=school)        
+
+        # make a teacher and student, make a lesson request with both of them. Save all to database
+        teacher = self.persistently_save_user(Teacher, school=school)
+        student = self.persistently_save_user(Student)
+        lesson = Lesson(num_lessons=3, interval=1, student=student, teacher=teacher, duration=timedelta(minutes=30))
+        self.save_object(lesson)
+        
+        # make a another student, make a lesson request with student and previous teacher. Save all to database
+        # then turn the lesson request into a booking
+        student = self.persistently_save_user(Student)
+        lesson = Lesson(num_lessons=4, interval=1, student=student, teacher=teacher, duration=timedelta(minutes=30))
+        self.save_object(lesson)
+        lesson.make_booking()
+        
+        # make a another teacher, make a lesson request with teacher and previous student. Save all to database
+        # then turn the lesson request into a booking, and get the invoice
+        teacher = self.persistently_save_user(Teacher, school=school)
+        lesson = Lesson(num_lessons=5, interval=1, student=student, teacher=teacher, duration=timedelta(minutes=30))
+        self.save_object(lesson)
+        invoice = lesson.make_booking()
+        
+        # make a transfer based on the invoice
+        transfer = Transfer(reference=invoice.ref(), amount=invoice.amount)
+        self.save_object(transfer)
+        
         
         # make a teacher and student, make a lesson request with both of them. Save all to database
         teacher = self.persistently_save_user(Teacher, school=school)
