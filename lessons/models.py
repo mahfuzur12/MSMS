@@ -39,7 +39,8 @@ class Lesson(models.Model):
         invoice = Invoice.create(
             amount=COST_PER_LESSON * self.num_lessons,
             student=self.student,
-            lesson=self)
+            lesson=self,
+            paid=False)
         try:
             self.save()
             invoice.save()
@@ -93,7 +94,8 @@ class Invoice(models.Model):
     number = models.CharField(max_length=60)
     date = models.DateField(default=timezone.now)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)   
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)  
+    paid = models.BooleanField(default=False)
     
     def create(student, **kwargs):
         '''Creates an invoice automatically generating the correct invoice number'''
@@ -102,7 +104,6 @@ class Invoice(models.Model):
         number = f"{student.user.pk}-{Invoice.objects.filter(student=student).__len__() + 1}"
         return Invoice(student=student, number=number,**kwargs)
     
-    
     def __str__(self):
         return f"Invoice {self.ref()}"
     
@@ -110,6 +111,22 @@ class Invoice(models.Model):
     def ref(self):
         '''Unique invoice reference number'''
         return f"{self.student.user.pk}-{self.number}"
+
+    def confirm_transfer(self):
+            # get the next available invoice number
+        transfer = Transfer(
+            student=self.student,
+            reference=self.number,
+            amount=self.amount,
+            invoice=self)
+        self.paid = True
+        try:
+            self.save()
+            transfer.save()
+            self.student.balance += self.amount
+            return transfer
+        except ValidationError as e:
+            print(e.messages)
 
 
 class Transfer(models.Model):
@@ -122,10 +139,3 @@ class Transfer(models.Model):
     amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)
     date_transferred = models.DateField(default=timezone.now)
     invoice = models.OneToOneField(Invoice, on_delete=models.CASCADE, null = True) 
-
-    def create(student, **kwargs):
-        '''Creates an invoice automatically generating the correct invoice number'''
-        
-        # get the next available invoice number
-        number = f"{student.user.pk}-{Invoice.objects.filter(student=student).__len__() + 1}"
-        return Invoice(student=student, number=number,**kwargs)

@@ -18,6 +18,5 @@ urlpatterns = [
     path('book/<pk>/', views.book_lesson, name="book_lesson"),
     path('save/<pk>/', views.save_lesson, name="save_lesson"),
     path('finances/', views.Finances.as_view(), name="finances"),
-    path('confirmTransfer/', views.confirmTransfer, name='confirmTransfer'),
     path('invoice/<pk>/', views.view_invoice, name='view_invoice')
 ]

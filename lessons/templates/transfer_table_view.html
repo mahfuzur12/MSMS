@@ -9,10 +9,10 @@
         </thead>
         <tbody>
         {% for transfer in list_of_transfers %}
-            <tr
+            <tr {% if list_of_transfers %}
                 class="hover-end"
-                onclick="window.location.href='{% url 'view_invoice' invoice.id %}'" data-toggle="tooltip" title="click to view Invoice">
-                
+                onclick="window.location.href='{% url 'view_invoice' transfer.invoice.id %}'" data-toggle="tooltip" title="click to view transfer"
+                {% endif %}>
                 <td>{{transfer.reference}}</td>
                 <td>{{transfer.amount}}</td>
                 <td>{{transfer.date_transferred}}</td>

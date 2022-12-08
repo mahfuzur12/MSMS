@@ -10,6 +10,9 @@
             <div class="card-body">
                 <h1 class="card-title">Invoice</h1>
             </div>
+            {% for message in messages %}
+                <p><b>{{ message }}</b></p>
+            {% endfor %}
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">Student Invoice Number: {{invoice.number}}</li>
                 <li class="list-group-item">Student URN: {{invoice.student.user.URN}}</li>
@@ -20,6 +23,12 @@
                 <li class="list-group-item">Amount: {{invoice.amount}}</li>
                 <li class="list-group-item">Date: {{invoice.date}}</li>
             </ul>
+            <form method="post">
+                {% csrf_token %}
+                {% if user.is_student and invoice.paid != True %}
+                    <input class="btn btn-primary" type="submit" value="Confirm Bank Transfer"  onclick="window.location.href='{% url 'view_invoice' invoice.id %}'">
+                {% endif %}
+            </form>
         </div>
     </div>
 </div>

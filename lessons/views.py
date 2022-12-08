@@ -397,18 +397,6 @@ class Finances(LoginRequiredMixin, ListView):
 
         return qs
 
-        
-
-
-@login_required(login_url="login")
-def confirmTransfer(request):
-    '''A view for confirming a bank transfer'''
-
-
-
-
-    return render(request, "confirmTransfer.html")
-
 @login_required(login_url="login")
 def view_invoice(request, pk:int):
     '''A view for seeing an invoice'''
@@ -425,6 +413,12 @@ def view_invoice(request, pk:int):
         if invoice.student.user.pk != request.user.pk:
             messages.add_message(request, messages.INFO, "This page is not available to you")
             return redirect('home')
+
+    if request.method == "POST":
+        invoice.confirm_transfer()
+        messages.add_message(request, messages.INFO, "Bank Transfer Confirmed!")
+        return redirect('finances')
+
 
     return render(request, 'invoice_view.html', {"invoice":invoice})
 

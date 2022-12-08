@@ -11,7 +11,7 @@
         </thead>
         <tbody>
         {% for invoice in list_of_invoices %}
-            <tr
+            <tr 
                 class="hover-end"
                 onclick="window.location.href='{% url 'view_invoice' invoice.id %}'" data-toggle="tooltip" title="click to view Invoice">
                 
