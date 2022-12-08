@@ -1,3 +1,3 @@
-from django.test import TestCase
-
-# Create your tests here.
+from lessons.test_folder.forms.test_lesson_form import LessonAdminFormTestCase, LessonStudentFormTestCase, LessonTeacherFormTestCase
+from lessons.test_folder.forms.test_availability_form import AvailabilityTestCase
+from lessons.test_folder.views.test_views import AvailabilityViewTestCase, OptionsViewTestCase, RequestStudentTestCase
