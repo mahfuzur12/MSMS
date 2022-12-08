@@ -4,8 +4,9 @@ from django.urls import reverse
 from numpy import isin
 from msms.form import StudentSignUpForm
 from msms.models import Student, User
+from helpers import LogInTester
 
-class StudentSignUpViewTestCase(TestCase):
+class StudentSignUpViewTestCase(TestCase, LogInTester):
     
     def setUp(self):
         self.url = reverse('student_sign_up')
@@ -39,6 +40,7 @@ class StudentSignUpViewTestCase(TestCase):
         form = response.content['form']
         self.assertTrue(isinstance(form, StudentSignUpForm))
         self.assertTrue(form.is_bound)
+        self.assertFalse(self._is_logged_in())
         
     def test_successful_student_sign_up(self):
         before_count = Student.objects.count()
@@ -54,3 +56,4 @@ class StudentSignUpViewTestCase(TestCase):
         self.assertEqual(user.email, 'janedoe@example.org')
         is_password_correct = check_password('signupform123', user.password1)
         self.assertTrue(is_password_correct)
+        self.assertTrue(self._is_logged_in())
