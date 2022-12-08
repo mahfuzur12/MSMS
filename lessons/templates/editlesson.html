@@ -11,7 +11,7 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input class="btn btn-primary" type="submit" value="Save">
+    <input class="btn btn-primary" type="submit" value="Save" onclick="window.location.href='{% url 'save_lesson' object.id %}'">
     {% if user.is_admin or user.is_superuser %}
     <input class="btn btn-primary" type="button" value="Book" onclick="window.location.href='{% url 'book_lesson' object.id %}'">
     {% endif %}

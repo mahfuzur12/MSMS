@@ -1,0 +1,27 @@
+<div style="overflow-x:auto">
+    <table class="table-striped border mx-auto table" style="width:max-content">
+        <thead class="bg-secondary text-light">
+            <tr>
+                <th>Invoice Number</th>
+                <th>Student URN</th>
+                <th>Number Of Lessons</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for invoice in list_of_invoices %}
+            <tr
+                class="hover-end"
+                onclick="window.location.href='{% url 'view_invoice' invoice.id %}'" data-toggle="tooltip" title="click to view Invoice">
+                
+                <td>{{invoice.number}}</td>
+                <td>{{invoice.student.user.URN}}</td>
+                <td>{{invoice.lesson.num_lessons}}</td>
+                <td>{{invoice.amount}}</td>
+                <td>{{invoice.date}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

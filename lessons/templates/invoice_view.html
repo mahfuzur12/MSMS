@@ -1,0 +1,26 @@
+{% extends "base_page.html"%}
+
+{% block content%}
+{% load static %}
+<link rel="stylesheet" href="{%static 'lessons/styles.css' %}">
+
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <div class="col-12 my-auto">
+            <div class="card-body">
+                <h1 class="card-title">Invoice</h1>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Student Invoice Number: {{invoice.number}}</li>
+                <li class="list-group-item">Student URN: {{invoice.student.user.URN}}</li>
+                <li class="list-group-item">Student Name: {{invoice.student.user.first_name}} {{invoice.student.user.last_name}}</li>
+                <li class="list-group-item">Teacher Name: {{invoice.lesson.teacher.user.first_name}} {{invoice.lesson.teacher.user.last_name}}</li>
+                <li class="list-group-item">Lesson Information: <br>
+                    Number of Lessons - {{invoice.lesson.num_lessons}}, Interval - {{invoice.lesson.interval}}, Duration - {{invoice.lesson.duration}}, First Lesson Date - {{invoice.lesson.first_lesson_date}}</li>
+                <li class="list-group-item">Amount: {{invoice.amount}}</li>
+                <li class="list-group-item">Date: {{invoice.date}}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

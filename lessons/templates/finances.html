@@ -1,9 +1,48 @@
 {% extends "base_page.html"%}
 
 {% block content%}
-<h1>Finances</h1>
+{% load static %}
+<link rel="stylesheet" href="{%static 'lessons/styles.css' %}">
+
+<h1>
+    Finances
+</h1>
 
 {% if user.is_student %}
-<h3>Balance: {{user.student.balance}} </h3>
+<h3>
+    Balance: {{user.student.balance}} 
+</h3>
 {% endif %}
-{% endblock %}
+
+{% for message in messages %}
+    <p>
+        <b>
+            {{ message }}
+        </b>
+    </p>
+{% endfor %}
+
+<ul class="list-group list-group-flush">
+    <li class="list-group-item">
+        <h3 class="mt-3">
+            Confirmed Bank Transfers
+        </h3>
+        {% if confirmed_transfers_and_invoices_list.allTransfers or confirmed_transfers_and_invoices_list.allTransfers %}
+            {% include "transfer_table_view.html" with list_of_transfers=confirmed_transfers_and_invoices_list.allTransfers %}
+        {% else %}
+        <p>No Bank Transfers...</p>
+        {% endif %}
+    </li>
+    <li class="list-group-item">
+        <h3 class="mt-3">
+            All Invoices
+        </h3>
+        {% if confirmed_transfers_and_invoices_list.allInvoices or confirmed_transfers_and_invoices_list.allInvoices %}
+            {% include "invoice_table_view.html" with list_of_invoices=confirmed_transfers_and_invoices_list.allInvoices %}
+        {% else %}
+        <p>No Invoices...</p>
+        {% endif %}
+    </li>
+</ul>
+
+{% endblock %} 

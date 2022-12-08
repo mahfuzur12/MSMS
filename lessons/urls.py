@@ -16,5 +16,8 @@ urlpatterns = [
     path('options/', views.options, name="lesson_options"),
     path('cancel/<pk>/', views.cancel_lesson, name="cancel_lesson"),
     path('book/<pk>/', views.book_lesson, name="book_lesson"),
-    path('finances/', views.finances, name="finances"),
+    path('save/<pk>/', views.save_lesson, name="save_lesson"),
+    path('finances/', views.Finances.as_view(), name="finances"),
+    path('confirmTransfer/', views.confirmTransfer, name='confirmTransfer'),
+    path('invoice/<pk>/', views.view_invoice, name='view_invoice')
 ]
