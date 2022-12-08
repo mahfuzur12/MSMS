@@ -33,6 +33,7 @@ class Lesson(models.Model):
         '''Converts this lesson into a booking. Creates a corresponding invoice too'''
         if self.state == "B":
             return
+                
         
         self.state = "B"
         invoice = Invoice.create(
@@ -48,6 +49,21 @@ class Lesson(models.Model):
             self.state = "R"
             self.save()
             return None
+
+    def save_booking(self, num_of_lessons):
+        if self.state == "B":
+            # If the lesson is already booked, then it must be edited
+            # So the amount in the invoice will change depending on the lesson edit
+            invoice = Invoice.objects.get(lesson=self)
+            invoice.amount = COST_PER_LESSON * num_of_lessons
+            try:
+                self.save()
+                invoice.save()
+                return invoice
+            except ValidationError as e:
+                print(e.messages)
+                self.save()
+                return None
     
     
     def cancel(self):
@@ -77,7 +93,7 @@ class Invoice(models.Model):
     number = models.CharField(max_length=60)
     date = models.DateField(default=timezone.now)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE)   
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)   
     
     def create(student, **kwargs):
         '''Creates an invoice automatically generating the correct invoice number'''
@@ -100,7 +116,7 @@ class Transfer(models.Model):
     '''Represents a bank transfer:
     Includes reference number which should be in the form (stud.id-inv.num)'''
 
-    #The URN of the Student who made the bank transfer
+    # Each transfer is related to a student
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     reference = models.CharField(max_length=30)
     amount = models.DecimalField(max_digits=20, default=0, decimal_places=2)

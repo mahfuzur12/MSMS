@@ -175,7 +175,8 @@ class EditLesson(LoginRequiredMixin, UpdateView):
         lesson:Lesson = form.save()
         lesson.day = DAYS[lesson.first_lesson_date.weekday()].capitalize()
         lesson.save()
-        messages.add_message(self.request, messages.INFO, "Successfully edited a lesson!")
+        lesson.save_booking(form.cleaned_data.get('num_lessons'))
+        messages.add_message(self.request, messages.INFO, "Successfully edited a lesson and updated invoice! ")
         return super().form_valid(form)
 
 
@@ -193,6 +194,11 @@ class StudentEditLesson(EditLesson):
         
         lesson = self.get_object(pk=self.kwargs['pk'])
         if lesson.student != request.user.student:
+            messages.add_message(self.request, messages.INFO, "This page is not available to you")
+            return redirect('home')
+
+        if lesson.state == 'B':
+            # If the lesson is already booked, only admins can edit them
             messages.add_message(self.request, messages.INFO, "This page is not available to you")
             return redirect('home')
 
@@ -216,6 +222,11 @@ class TeacherEditLesson(EditLesson):
             messages.add_message(self.request, messages.INFO, "This page is not available to you")
             return redirect('home')
 
+        if lesson.state == 'B':
+            # If the lesson is already booked, only admins can edit them
+            messages.add_message(self.request, messages.INFO, "This page is not available to you")
+            return redirect('home')
+
         return super().get(request, *args, **kwargs)
 
 
@@ -226,7 +237,7 @@ class AdminEditLesson(EditLesson):
     form_class = LessonAdminForm
     
     def get(self, request, *args, **kwargs):
-        # user must be amin to see this page
+        # user must be admin to see this page
         if not (request.user.is_admin or request.user.is_superuser):
             messages.add_message(self.request, messages.INFO, "This page is not available to you")
             return redirect('home')
@@ -313,14 +324,40 @@ def book_lesson(request, pk:int):
     
     lesson = get_object_or_404(Lesson, pk=pk)
     if request.user.is_admin:
-        # redirect if lesson if not taught by teacher from the same school as admin
+        # redirect if lesson is not taught by teacher from the same school as admin
         if lesson.teacher.school != request.user.admin.school:
             messages.add_message(request, messages.INFO, "This page is not available to you")
             return redirect('home')
      
     lesson.make_booking()
     messages.add_message(request, messages.INFO, "Succesfully booked lesson")
-    return redirect("view_lessons") 
+    return redirect("view_lessons")
+
+@login_required(login_url="login")
+def save_lesson(request, pk:int):
+    '''A view which cancels a lesson.
+    Cancels from Non-superuser accounts have some restrictions'''
+    
+    lesson = get_object_or_404(Lesson, pk=pk)
+    if request.user.is_teacher:
+        if request.POST['state'] == "B":
+            # only admins and superusers can book lessons
+            messages.add_message(request, messages.INFO, "This page is not available to you")
+            return redirect('home')
+        
+    if request.user.is_admin:
+        # redirect if lesson is not taught by teacher from the same school as admin
+        if lesson.teacher.school != request.user.admin.school:
+             messages.add_message(request, messages.INFO, "This page is not available to you")
+             return redirect('home')
+
+    if request.user.is_student:
+        if request.method == 'POST':
+            if request.POST['state'] == "B":
+                messages.add_message(request, messages.INFO, "This page is not available to you")
+                return redirect('home')
+
+    return redirect('view_lessons')
     
     
 class Finances(LoginRequiredMixin, ListView):
@@ -351,12 +388,12 @@ class Finances(LoginRequiredMixin, ListView):
         elif user.is_admin:
             # allTransfers; all transfers to be viewed by admin.
             qs = {"allTransfers":Transfer.objects.all(),
-            "allInvoices":Transfer.objects.all()}
+            "allInvoices":Invoice.objects.all()}
             return qs
 
         # by default display every transfer and invoice
         qs = {"allTransfers":Transfer.objects.all(),
-            "allInvoices":Transfer.objects.all()}
+            "allInvoices":Invoice.objects.all()}
 
         return qs
 
