@@ -7,6 +7,7 @@
                 <th>Number Of Lessons</th>
                 <th>Amount</th>
                 <th>Date</th>
+                <th>Payment Made</th>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +21,11 @@
                 <td>{{invoice.lesson.num_lessons}}</td>
                 <td>{{invoice.amount}}</td>
                 <td>{{invoice.date}}</td>
+                {% if invoice.paid %}
+                    <td>Paid</td>
+                {% else %}
+                    <td>Not Paid</td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>

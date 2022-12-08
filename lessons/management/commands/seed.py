@@ -181,9 +181,7 @@ class Command(BaseCommand):
         invoice:Invoice = lesson.make_booking()
         
         # make a transfer based on the invoice
-        transfer = Transfer.create_from_invoice(invoice)
-        self.save_object(transfer)
-        
+        invoice.confirm_transfer()
         
         # make a teacher and student, make a lesson request with both of them. Save all to database
         teacher = self.persistently_save_user(Teacher, school=school)
@@ -204,7 +202,5 @@ class Command(BaseCommand):
         lesson = Lesson(num_lessons=5, interval=1, student=student, teacher=teacher, duration=timedelta(minutes=30))
         self.save_object(lesson)
         invoice = lesson.make_booking()
+        invoice.confirm_transfer()
         
-        # make a transfer based on the invoice
-        transfer = Transfer.create_from_invoice(invoice)
-        self.save_object(transfer)
