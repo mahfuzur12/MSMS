@@ -1,3 +1,17 @@
 from django.test import TestCase
+from django.urls import reverse
+
 
 class FinancesViewTestCase(TestCase):
+
+    def setUp(self):
+        self.url = reverse('finances')
+
+    def test_finances_url(self):
+        self.assertEqual(self.url, 'finances/')
+
+    def test_get_finances(self):
+        response  = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'finances.html')
+        
